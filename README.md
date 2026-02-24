@@ -1,15 +1,18 @@
 # 🏥 MedPath Pro
 
-MedPath Pro is a high-performance, interactive hospital shortest path visualizer. Designed with an elegant medical-themed UI and powered by Dijkstra's algorithm, it helps visualize the most efficient routes between patients and medical facilities in real-time.
-
-<p align="center">
-  <img src="https://img.shields.io/github/languages/top/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Top Language" />
-  <img src="https://img.shields.io/github/languages/count/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Languages Count" />
-  <img src="https://img.shields.io/github/repo-size/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Repo Size" />
-  <img src="https://img.shields.io/github/stars/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Stars" />
-  <img src="https://img.shields.io/github/forks/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Forks" />
-  <img src="https://img.shields.io/github/license/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="License" />
+<p align="left">
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white" alt="Three.js" />
+  <img src="https://img.shields.io/badge/Font_Awesome-339AF0?style=for-the-badge&logo=font-awesome&logoColor=white" alt="Font Awesome" />
 </p>
+
+## 🌐 Live Demo
+
+**Check out the live application here: [MedPath Pro Live](https://ajaygangwar945.github.io/MedPath-Pro/)**
+
+MedPath Pro is a high-performance, interactive hospital shortest path visualizer. Designed with an elegant medical-themed UI and powered by Dijkstra's algorithm, it helps visualize the most efficient routes between patients and medical facilities in real-time.
 
 ## 🌟 Key Features
 
@@ -21,14 +24,6 @@ MedPath Pro is a high-performance, interactive hospital shortest path visualizer
 - 📊 **Demo Data**: One-click demo initialization to populate the map with complex scenarios.
 
 ## 🛠️ Tech Stack
-
-<p align="left">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white" alt="Three.js" />
-  <img src="https://img.shields.io/badge/Font_Awesome-339AF0?style=for-the-badge&logo=font-awesome&logoColor=white" alt="Font Awesome" />
-</p>
 
 - **Structure**: Semantic HTML5
 - **Styling**: Vanilla CSS3 (Custom Properties, Glassmorphism)
