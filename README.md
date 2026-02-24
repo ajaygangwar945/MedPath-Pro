@@ -3,6 +3,8 @@
 MedPath Pro is a high-performance, interactive hospital shortest path visualizer. Designed with an elegant medical-themed UI and powered by Dijkstra's algorithm, it helps visualize the most efficient routes between patients and medical facilities in real-time.
 
 <p align="center">
+  <img src="https://img.shields.io/github/languages/top/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Top Language" />
+  <img src="https://img.shields.io/github/languages/count/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Languages Count" />
   <img src="https://img.shields.io/github/repo-size/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Repo Size" />
   <img src="https://img.shields.io/github/stars/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Stars" />
   <img src="https://img.shields.io/github/forks/ajaygangwar945/MedPath-Pro?style=for-the-badge&color=14b8a6" alt="Forks" />
