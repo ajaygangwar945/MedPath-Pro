@@ -2,19 +2,36 @@
 <html lang="en">
 
 <head>
+    <!-- 
+    ============================================================================
+       MEDPATH PRO - HEAD CONFIGURATION
+       Includes metadata, typography, and external libraries.
+    ============================================================================
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedPath Pro</title>
+    <title>MedPath Pro | Hospital Path Visualizer</title>
+
+    <!-- Dynamic SVG Icon (MedPath Cross with teal circle) -->
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='%2314b8a6' stroke-width='8'/><rect x='45' y='25' width='10' height='50' fill='%2314b8a6' rx='2'/><rect x='25' y='45' width='50' height='10' fill='%2314b8a6' rx='2'/></svg>">
+
+    <!-- External Assets -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Typography -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <!-- Icons -->
+    <link rel="stylesheet" href="style.css"> <!-- Custom Styles -->
+
+    <!-- 3D Engine Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 
 <body>
+    <!-- 3D LAYER: Background particle simulation renders here -->
     <div id="three-container"></div>
+
+    <!-- HEADER: Logo and high-level actions -->
     <header>
         <div class="logo-area">
             <svg class="med-logo" viewBox="0 0 100 100" width="40" height="40">
@@ -26,33 +43,40 @@
             <h1>MedPath Pro</h1>
         </div>
         <div class="header-actions">
+            <!-- info-icon triggers the instruction modal -->
             <div class="info-icon" title="Instructions"><i class="fas fa-circle-question"></i></div>
         </div>
     </header>
 
+    <!-- MAIN APP SHELL: Contains the interactive canvas and results sidebar -->
     <div id="app-shell">
         <main>
+            <!-- CANVAS AREA: Where graph nodes and edges are drawn -->
             <div id="canvas-container">
                 <canvas id="graph-canvas"></canvas>
+                <!-- empty-state: Helper text visible when no nodes are present -->
                 <div id="empty-state">Click to add hospitals or users</div>
             </div>
         </main>
 
+        <!-- SIDEBAR: Lists the calculated shortest paths and action buttons -->
         <aside id="results-sidebar">
             <h3>Shortest Paths</h3>
             <div id="pathsList" class="paths-container">
+                <!-- path-items will be injected here via JavaScript -->
                 <div class="empty-hint">Paths will appear here after calculation</div>
             </div>
         </aside>
     </div>
 
-    <!-- Hospital Portal (Hidden by default) -->
+    <!-- HOSPITAL PORTAL: Dynamic overlay dashboard for resource management (hidden by default) -->
     <div id="hospital-portal" class="hidden">
         <div class="portal-header">
             <button id="backToMapBtn" class="btn"><i class="fas fa-arrow-left"></i> Back to Map</button>
             <h2 id="portal-hosp-name">Hospital Dashboard</h2>
         </div>
         <div class="portal-grid">
+            <!-- Left Card: Stats and manual settings -->
             <div class="portal-card stats-card">
                 <h3>Hospital Status</h3>
                 <div class="stat-item">
@@ -61,23 +85,27 @@
                 </div>
                 <button id="editPortalHospBtn" class="btn btn-outline btn-block">Edit Hospital Settings</button>
             </div>
+            <!-- Right Card: Interactive list of incoming patient requests -->
             <div class="portal-card requests-card">
                 <h3>Emergency Notifications</h3>
                 <div id="notification-list" class="notification-container">
-                    <!-- Notifications will appear here -->
+                    <!-- notifications will be injected here via JavaScript -->
                     <div class="empty-hint">No incoming notifications</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- FOOTER: Main interaction toolbar -->
     <footer>
         <div class="toolbar">
+            <!-- Left Group: Node and Edge placement toggles -->
             <div class="left-group">
                 <button id="addUserBtn" class="btn active"><i class="fas fa-user"></i> Add User</button>
                 <button id="addHospitalBtn" class="btn"><i class="fas fa-hospital"></i> Add Hospital</button>
                 <button id="addEdgeBtn" class="btn"><i class="fas fa-plus"></i> Add Edges</button>
             </div>
+            <!-- Center Group: Source input and core algorithm execution -->
             <div class="center-group">
                 <div class="input-container">
                     <label for="sourceNode">Source ID:</label>
@@ -85,6 +113,7 @@
                 </div>
                 <button id="runBtn" class="btn btn-run">Run Dijkstra</button>
             </div>
+            <!-- Right Group: Global state management -->
             <div class="right-group">
                 <button id="demoBtn" class="btn">Demo Data</button>
                 <button id="clearBtn" class="btn btn-outline">Clear</button>
@@ -92,7 +121,7 @@
         </div>
     </footer>
 
-    <!-- Instructions Modal -->
+    <!-- MODAL Layer: Instruction manual -->
     <div id="instructionsModal" class="modal">
         <div class="modal-content">
             <div class="close-modal"><i class="fas fa-xmark"></i></div>
@@ -106,7 +135,7 @@
         </div>
     </div>
 
-    <!-- Edit User Modal -->
+    <!-- MODAL Layer: Detailed User editing form -->
     <div id="editNodeModal" class="modal">
         <div class="modal-content">
             <div class="close-modal"><i class="fas fa-xmark"></i></div>
@@ -127,7 +156,7 @@
         </div>
     </div>
 
-    <!-- Edit Hospital Modal -->
+    <!-- MODAL Layer: Detailed Hospital editing form -->
     <div id="editHospitalModal" class="modal">
         <div class="modal-content">
             <div class="close-modal"><i class="fas fa-xmark"></i></div>
@@ -144,7 +173,10 @@
         </div>
     </div>
 
+    <!-- ALERT LAYER: Contains floating toast notifications -->
     <div id="toast-container"></div>
+
+    <!-- CORE LOGIC: Must be loaded last to ensure all DOM elements exist -->
     <script src="script.js"></script>
 </body>
 
