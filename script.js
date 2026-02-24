@@ -715,22 +715,31 @@ function updateBtnStates() {
  * Populates the graph with a complex pre-built demo medical network.
  */
 demoBtn.addEventListener('click', () => {
+    // Map fractional [0,1] positions to canvas pixels with a safe margin on all sides.
+    // This ensures every node and its label stays fully visible on any screen size.
+    const margin = 70; // px safe border (accounts for node radius + label text)
+    const W = canvas.width - margin * 2;
+    const H = canvas.height - margin * 2;
+    const px = fx => Math.round(margin + fx * W);
+    const py = fy => Math.round(margin + fy * H);
+
+    // Fractional layout (fx, fy both in range [0, 1])
     nodes = [
-        { id: 0, x: 140, y: 80, type: 'hospital', name: 'City Hospital', availableBeds: 45 },
-        { id: 1, x: 310, y: 60, type: 'user', name: 'Alice Smith', phone: '+1 111 222 333', email: 'alice@med.com', availableBeds: 0 },
-        { id: 2, x: 160, y: 220, type: 'user', name: 'Bob Johnson', phone: '+1 444 555 666', email: 'bob@med.com', availableBeds: 0 },
-        { id: 3, x: 510, y: 120, type: 'hospital', name: 'West Medical', availableBeds: 10 },
-        { id: 4, x: 360, y: 220, type: 'user', name: 'Charlie Brown', phone: '+1 777 888 999', email: 'charlie@med.com', availableBeds: 0 },
-        { id: 5, x: 640, y: 80, type: 'hospital', name: 'East Clinic', availableBeds: 5 },
-        { id: 6, x: 560, y: 250, type: 'user', name: 'Diana Prince', phone: '+1 222 333 444', email: 'diana@med.com', availableBeds: 0 },
-        { id: 7, x: 180, y: 380, type: 'user', name: 'Eve Online', phone: '+1 555 666 777', email: 'eve@med.com', availableBeds: 0 },
-        { id: 8, x: 380, y: 380, type: 'user', name: 'Frank Castle', phone: '+1 888 999 000', email: 'frank@med.com', availableBeds: 0 },
-        { id: 9, x: 610, y: 350, type: 'user', name: 'Grace Hopper', phone: '+1 123 456 789', email: 'grace@med.com', availableBeds: 0 },
-        { id: 10, x: 680, y: 180, type: 'user', name: 'Hank Pym', phone: '+1 987 654 321', email: 'hank@med.com', availableBeds: 0 },
-        { id: 11, x: 100, y: 300, type: 'user', name: 'Ivy League', phone: '+1 321 654 987', email: 'ivy@med.com', availableBeds: 0 },
-        { id: 12, x: 260, y: 450, type: 'user', name: 'Jack Reacher', phone: '+1 456 789 123', email: 'jack@med.com', availableBeds: 0 },
-        { id: 13, x: 510, y: 450, type: 'user', name: 'Kelly Kapur', phone: '+1 789 123 456', email: 'kelly@med.com', availableBeds: 0 },
-        { id: 14, x: 710, y: 420, type: 'user', name: 'Leo Messi', phone: '+1 159 753 486', email: 'leo@med.com', availableBeds: 0 }
+        { id: 0, x: px(0.13), y: py(0.12), type: 'hospital', name: 'City Hospital', availableBeds: 45 },
+        { id: 1, x: px(0.35), y: py(0.08), type: 'user', name: 'Alice Smith', phone: '+1 111 222 333', email: 'alice@med.com', availableBeds: 0 },
+        { id: 2, x: px(0.14), y: py(0.38), type: 'user', name: 'Bob Johnson', phone: '+1 444 555 666', email: 'bob@med.com', availableBeds: 0 },
+        { id: 3, x: px(0.53), y: py(0.16), type: 'hospital', name: 'West Medical', availableBeds: 10 },
+        { id: 4, x: px(0.40), y: py(0.38), type: 'user', name: 'Charlie Brown', phone: '+1 777 888 999', email: 'charlie@med.com', availableBeds: 0 },
+        { id: 5, x: px(0.75), y: py(0.10), type: 'hospital', name: 'East Clinic', availableBeds: 5 },
+        { id: 6, x: px(0.65), y: py(0.38), type: 'user', name: 'Diana Prince', phone: '+1 222 333 444', email: 'diana@med.com', availableBeds: 0 },
+        { id: 7, x: px(0.18), y: py(0.60), type: 'user', name: 'Eve Online', phone: '+1 555 666 777', email: 'eve@med.com', availableBeds: 0 },
+        { id: 8, x: px(0.42), y: py(0.60), type: 'user', name: 'Frank Castle', phone: '+1 888 999 000', email: 'frank@med.com', availableBeds: 0 },
+        { id: 9, x: px(0.65), y: py(0.58), type: 'user', name: 'Grace Hopper', phone: '+1 123 456 789', email: 'grace@med.com', availableBeds: 0 },
+        { id: 10, x: px(0.82), y: py(0.32), type: 'user', name: 'Hank Pym', phone: '+1 987 654 321', email: 'hank@med.com', availableBeds: 0 },
+        { id: 11, x: px(0.06), y: py(0.52), type: 'user', name: 'Ivy League', phone: '+1 321 654 987', email: 'ivy@med.com', availableBeds: 0 },
+        { id: 12, x: px(0.28), y: py(0.80), type: 'user', name: 'Jack Reacher', phone: '+1 456 789 123', email: 'jack@med.com', availableBeds: 0 },
+        { id: 13, x: px(0.54), y: py(0.80), type: 'user', name: 'Kelly Kapur', phone: '+1 789 123 456', email: 'kelly@med.com', availableBeds: 0 },
+        { id: 14, x: px(0.82), y: py(0.74), type: 'user', name: 'Leo Messi', phone: '+1 159 753 486', email: 'leo@med.com', availableBeds: 0 }
     ];
     edges = [
         { from: 0, to: 1, weight: 20 }, { from: 0, to: 2, weight: 15 },

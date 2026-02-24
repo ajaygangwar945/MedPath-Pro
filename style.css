@@ -8,59 +8,83 @@
 
 :root {
     /* --- COLOR PALETTE (MedPath Signature) --- */
-    --bg-light: #f8fafc;        /* Base background color */
-    --bg-canvas: #ffffff;       /* Canvas area background */
-    --bg-sidebar: rgba(255, 255, 255, 0.98); /* Glass sidebar background */
-    
-    --primary-teal: #14b8a6;    /* Main brand color (MedPath Teal) */
-    --primary-hover: #0d9488;   /* Darker teal for button hover */
-    
-    --text-dark: #0f172a;       /* Primary text */
-    --text-muted: #64748b;      /* Secondary/Instructional text */
-    
-    --border-color: rgba(0, 0, 0, 0.06); /* Subtle borders */
-    
-    --hospital-red: #ff4d4d;    /* Node color for hospitals */
-    --user-teal: #14b8a6;        /* Node color for users */
-    --path-cyan: #2dd4bf;       /* Solved path color */
+    --bg-light: #f8fafc;
+    /* Base background color */
+    --bg-canvas: #ffffff;
+    /* Canvas area background */
+    --bg-sidebar: rgba(255, 255, 255, 0.98);
+    /* Glass sidebar background */
+
+    --primary-teal: #14b8a6;
+    /* Main brand color (MedPath Teal) */
+    --primary-hover: #0d9488;
+    /* Darker teal for button hover */
+
+    --text-dark: #0f172a;
+    /* Primary text */
+    --text-muted: #64748b;
+    /* Secondary/Instructional text */
+
+    --border-color: rgba(0, 0, 0, 0.06);
+    /* Subtle borders */
+
+    --hospital-red: #ff4d4d;
+    /* Node color for hospitals */
+    --user-teal: #14b8a6;
+    /* Node color for users */
+    --path-cyan: #2dd4bf;
+    /* Solved path color */
 
     /* --- LAYOUT CONSTANTS --- */
     --toolbar-height: 80px;
     --header-height: 70px;
-    
+
     /* --- SHADOWS (Elevation System) --- */
-    --shadow-sm: 0 4px 10px rgba(20, 184, 166, 0.08); /* Light glow */
-    --shadow-md: 0 10px 30px rgba(20, 184, 166, 0.12); /* Significant depth */
+    --shadow-sm: 0 4px 10px rgba(20, 184, 166, 0.08);
+    /* Light glow */
+    --shadow-md: 0 10px 30px rgba(20, 184, 166, 0.12);
+    /* Significant depth */
 }
 
 /* --- RESET & GLOBAL STYLES --- */
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box; /* Ensures padding doesn't affect total width */
+    box-sizing: border-box;
+    /* Ensures padding doesn't affect total width */
+}
+
+/* --- UTILITY --- */
+.hidden {
+    display: none !important;
 }
 
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-light);
     color: var(--text-dark);
-    height: 100vh; /* Fill full viewport height */
+    height: 100vh;
+    /* Fill full viewport height */
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevents unwanted browser scrolling; internal scroll used instead */
+    overflow: hidden;
+    /* Prevents unwanted browser scrolling; internal scroll used instead */
     position: relative;
     line-height: 1.6;
 }
 
 /* --- BACKGROUND LAYER (3D Scene) --- */
 #three-container {
-    position: fixed; /* Stays fixed while other elements move over it */
+    position: fixed;
+    /* Stays fixed while other elements move over it */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;      /* Placed behind all UI elements */
-    opacity: 0.6;    /* Subtle blending with background color */
+    z-index: -1;
+    /* Placed behind all UI elements */
+    opacity: 0.6;
+    /* Subtle blending with background color */
 }
 
 /* --- HEADER / NAVIGATION --- */
@@ -69,12 +93,14 @@ header {
     background-color: white;
     color: var(--text-dark);
     display: flex;
-    justify-content: space-between; /* Logo on left, info on right */
+    justify-content: space-between;
+    /* Logo on left, info on right */
     align-items: center;
     padding: 0 2rem;
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    z-index: 100; /* Stays on top during overlap */
+    z-index: 100;
+    /* Stays on top during overlap */
 }
 
 .logo-area {
@@ -86,7 +112,8 @@ header {
 
 header h1 {
     font-size: 1.4rem;
-    font-weight: 800; /* Extra bold for branding */
+    font-weight: 800;
+    /* Extra bold for branding */
     letter-spacing: -0.5px;
     margin: 0;
 }
@@ -104,19 +131,22 @@ header h1 {
 }
 
 .info-icon:hover {
-    color: var(--primary-teal); /* Hover feedback */
+    color: var(--primary-teal);
+    /* Hover feedback */
 }
 
 /* --- MAIN APPLICATION LAYOUT (Shell) --- */
 #app-shell {
-    flex: 1; /* Occupies remaining height after Header and Footer */
+    flex: 1;
+    /* Occupies remaining height after Header and Footer */
     display: flex;
     overflow: hidden;
     background-color: transparent;
 }
 
 main {
-    flex: 1; /* Main canvas area takes maximum space */
+    flex: 1;
+    /* Main canvas area takes maximum space */
     position: relative;
     padding: 1rem;
 }
@@ -126,7 +156,8 @@ main {
     height: 100%;
     position: relative;
     background-color: var(--bg-canvas);
-    border-radius: 16px; /* Rounded card-style display */
+    border-radius: 16px;
+    /* Rounded card-style display */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--border-color);
 }
@@ -135,7 +166,8 @@ canvas {
     display: block;
     width: 100%;
     height: 100%;
-    cursor: crosshair; /* Visual cue for drawing interaction */
+    cursor: crosshair;
+    /* Visual cue for drawing interaction */
 }
 
 #empty-state {
@@ -145,7 +177,8 @@ canvas {
     transform: translate(-50%, -50%);
     color: var(--text-muted);
     font-size: 1rem;
-    pointer-events: none; /* Allows clicks to pass through to the canvas */
+    pointer-events: none;
+    /* Allows clicks to pass through to the canvas */
     opacity: 0.5;
 }
 
@@ -153,8 +186,10 @@ canvas {
 #results-sidebar {
     width: 350px;
     background-color: var(--bg-sidebar);
-    backdrop-filter: blur(15px);        /* Standard Glassmorphism blur */
-    -webkit-backdrop-filter: blur(15px); /* Safari support */
+    backdrop-filter: blur(15px);
+    /* Standard Glassmorphism blur */
+    -webkit-backdrop-filter: blur(15px);
+    /* Safari support */
     border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
@@ -164,7 +199,8 @@ canvas {
 
 .paths-container {
     flex: 1;
-    overflow-y: auto; /* Internal scrolling for many results */
+    overflow-y: auto;
+    /* Internal scrolling for many results */
 }
 
 .path-item {
@@ -173,7 +209,8 @@ canvas {
     padding: 1.25rem;
     margin-bottom: 1.25rem;
     border: 1px solid var(--border-color);
-    border-left: 5px solid var(--primary-teal); /* Brand accent bar */
+    border-left: 5px solid var(--primary-teal);
+    /* Brand accent bar */
     box-shadow: var(--shadow-sm);
 }
 
@@ -188,7 +225,8 @@ canvas {
     font-size: 0.8rem;
     color: var(--primary-teal);
     font-weight: 600;
-    word-break: break-all; /* Prevents Long path IDs from breaking layout */
+    word-break: break-all;
+    /* Prevents Long path IDs from breaking layout */
 }
 
 /* --- FOOTER / TOOLBAR --- */
@@ -207,6 +245,16 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
+}
+
+.left-group,
+.center-group,
+.right-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
 }
 
 .input-container {
@@ -237,7 +285,8 @@ footer {
     border-radius: 12px;
     cursor: pointer;
     font-weight: 700;
-    transition: all 0.25s; /* Smooth hover animations */
+    transition: all 0.25s;
+    /* Smooth hover animations */
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -265,7 +314,8 @@ footer {
 }
 
 .btn-outline {
-    border-color: #ef4444; /* Alert red */
+    border-color: #ef4444;
+    /* Alert red */
     color: #ef4444;
 }
 
@@ -276,14 +326,16 @@ footer {
 
 /* --- MODALS (Overlays) --- */
 .modal {
-    display: none; /* Controlled via JS */
+    display: none;
+    /* Controlled via JS */
     position: fixed;
     z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(15, 23, 42, 0.4); /* Darkened backdrop */
+    background-color: rgba(15, 23, 42, 0.4);
+    /* Darkened backdrop */
     backdrop-filter: blur(8px);
 }
 
@@ -295,12 +347,20 @@ footer {
     max-width: 500px;
     position: relative;
     margin: 8% auto;
-    animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy entrance */
+    animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Bouncy entrance */
 }
 
 @keyframes modalPop {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .close-modal {
@@ -313,15 +373,132 @@ footer {
 
 .close-modal:hover {
     color: #ef4444;
-    transform: rotate(90deg); /* Playful close animation */
+    transform: rotate(90deg);
+    /* Playful close animation */
 }
 
 /* --- HOSPITAL DASHBOARD PORTAL --- */
+.portal-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: white;
+}
+
+.portal-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-dark);
+}
+
+.portal-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.portal-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.stat-item label {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.stat-item span {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.btn-block {
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.notification-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.empty-hint {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem;
+    opacity: 0.7;
+}
+
+.request-btn {
+    margin-top: 0.75rem;
+    background: var(--primary-teal);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.request-btn:hover {
+    background: var(--primary-hover);
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-teal);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
 #hospital-portal {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Centered overlay */
+    transform: translate(-50%, -50%);
+    /* Centered overlay */
     width: 90%;
     height: 85%;
     background-color: var(--bg-light);
@@ -335,14 +512,22 @@ footer {
 }
 
 @keyframes portalSlide {
-    from { transform: translate(-50%, -40%); opacity: 0; }
-    to { transform: translate(-50%, -50%); opacity: 1; }
+    from {
+        transform: translate(-50%, -40%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+    }
 }
 
 .portal-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: 350px 1fr; /* Stats on left, entries on right */
+    grid-template-columns: 350px 1fr;
+    /* Stats on left, entries on right */
     gap: 2.5rem;
     padding: 2.5rem;
     overflow-y: auto;
@@ -361,7 +546,8 @@ footer {
 .notification-card:hover {
     background: white;
     border-color: var(--primary-teal);
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08); /* Hover depth */
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08);
+    /* Hover depth */
 }
 
 /* --- STATUS BADGES --- */
@@ -373,8 +559,15 @@ footer {
     text-transform: uppercase;
 }
 
-.status-pending { background: #fef9c3; color: #854d0e; }
-.status-approved { background: #dcfce7; color: #166534; }
+.status-pending {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.status-approved {
+    background: #dcfce7;
+    color: #166534;
+}
 
 /* --- TOAST NOTIFICATIONS --- */
 #toast-container {
@@ -394,14 +587,27 @@ footer {
 }
 
 @keyframes toastSlideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 /* --- CUSTOM SCROLLBARS --- */
-::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar {
+    width: 8px;
+}
+
 ::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
