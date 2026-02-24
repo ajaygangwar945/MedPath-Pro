@@ -36,28 +36,58 @@ MedPath Pro is a high-performance, interactive hospital shortest path visualizer
 
 ## 🚀 Getting Started
 
+### Prerequisites
+
+- **Node.js**: Version 18.0.0 or higher.
+- **MongoDB**: A running MongoDB instance (local or Atlas).
+
 ### Installation
 
-No installation is required. Simply clone the repository and open `index.html` in any modern web browser.
+1. Clone the repository:
 
-```bash
-git clone https://github.com/ajaygangwar945/MedPath-Pro.git
-cd MedPath-Pro
-```
+   ```bash
+   git clone https://github.com/ajaygangwar945/MedPath-Pro.git
+   cd MedPath-Pro
+   ```
 
-### How to Use
+2. Install dependencies:
 
-1. 👤 **Add Nodes**: Select "Add User" or "Add Hospital" from the toolbar and click anywhere on the canvas.
-2. 🔗 **Connect Points**: Select "Add Edges", click a source node, then click a destination node to create a weighted path.
-3. 🏁 **Calculate Paths**: Enter the ID of your source node in the "Source ID" input and click **Run Dijkstra**.
-4. 🏥 **Notify Hospitals**: Once paths are calculated, click "Notify Hospital" in the sidebar to send an emergency request.
-5. 🔑 **Portal Access**: Click on any Hospital node to open its management portal.
+   ```bash
+   cd server
+   npm install
+   ```
+
+3. Configure environment variables:
+   Create a `.env` file in the `server/` directory with:
+
+   ```env
+   MONGO_URI=your_mongodb_uri
+   JWT_SECRET=your_jwt_secret
+   PORT=5000
+   ```
+
+4. Run the application:
+
+   ```bash
+   # From the root directory
+   npm start
+   ```
 
 ## 📂 Project Structure
 
-- 📄 `index.html`: Main application interface and structure.
-- 🎨 `style.css`: Comprehensive styling, including animations, glassmorphism, and responsive layouts.
-- ⚙️ `script.js`: Core application logic, graph management, algorithm implementation, and 3D background initialization.
+- 📂 `server/`: Backend Node.js/Express server logic and models.
+  - 📂 `public/`: Frontend static files (the core visualizer).
+- 📄 `index.html`: (Legacy/Development) Shortcut to frontend.
+- 📄 `render.yaml`: Configuration for Render deployment.
+
+## ☁️ Deployment
+
+This project is ready for deployment on **Render** using Blueprint:
+
+1. Push your code to GitHub.
+2. Go to Render Dashboard.
+3. Select **New > Blueprint**.
+4. Connect this repository and follow the prompts.
 
 ---
 Developed with ❤️ for efficient healthcare logistics.
