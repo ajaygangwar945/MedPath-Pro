@@ -1,0 +1,83 @@
+============================================================================
+PROJECT TITLE: MedPath Pro - Hospital Shortest Path Visualizer
+SUBTITLE: Streamlining Healthcare Logistics with Graph Theory
+============================================================================
+
+1. PROJECT OVERVIEW
+----------------------------------------------------------------------------
+MedPath Pro is an interactive web-based simulator designed to optimize the 
+transportation of patients to medical facilities. It provides a visual 
+platform where users can model real-world street networks, hospital locations, 
+and patient positions. By visualizing shortest paths, the application 
+demonstrates how data-driven decisions can save critical time during 
+medical emergencies.
+
+2. CORE ALGORITHM: DIJKSTRA'S ALGORITHM
+----------------------------------------------------------------------------
+The application is powered by Dijkstra's Algorithm, a fundamental graph 
+traversal algorithm used for finding the shortest paths between nodes in 
+a graph.
+
+How it works in MedPath Pro:
+- Nodes: Represent Hospitals or Patients (Users).
+- Edges: Represent roads or paths connecting them.
+- Weights: Represent distances or travel times between locations.
+- The Algorithm: Starting from a specific patient, it explores every 
+  possible route, keeping track of the minimum "cost" to reach every 
+  hospital, ensuring the absolute shortest path is found.
+
+3. USES & APPLICATIONS OF DIJKSTRA'S ALGORITHM
+----------------------------------------------------------------------------
+Dijkstra's algorithm is widely used across various industries:
+- GPS & Navigation: Found in apps like Google Maps for routing vehicles.
+- Logistics: Used for supply chain optimization and delivery routing.
+- Network Routing: Directs data packets across the internet to minimize latency.
+- Infrastructure Planning: Designing efficient power grids and water pipelines.
+- Robotics: Helps autonomous robots navigate paths while avoiding obstacles.
+
+4. PROJECT FUNCTIONALITIES
+----------------------------------------------------------------------------
+The application offers several interactive features for a full simulation:
+
+A. Dynamic Map Building:
+- Add Users (Patients) and Hospitals by clicking anywhere on a 2D canvas.
+- Create Edges (Roads) between nodes and assign custom weights (Distances).
+
+B. Real-Time Pathfinding:
+- One-click execution of the shortest path calculation.
+- Instant visual highlighting of the optimal route in cyan.
+
+C. Hospital Resource Management (Portal):
+- Every hospital has a private "Dashboard" to manage bed availability.
+- Bed counts are updated in real-time as patients are admitted.
+
+D. Integrated Notification System:
+- Patients can "Notify" the nearest hospital via the sidebar.
+- Hospitals receive alerts and can "Approve" incoming patients.
+- Approval triggers a high-fidelity "Flow" animation along the shortest path.
+
+E. Interactive Demo Data:
+- Pre-built medical networks to showcase complex routing scenarios immediately.
+
+5. TECHNICAL & OTHER DETAILS
+----------------------------------------------------------------------------
+A. Tech Stack:
+- Frontend: HTML5, CSS3 (Glassmorphism, CSS Variables).
+- Graphics: Canvas API (2D Rendering), Three.js (3D Animated Background).
+- Logic: Vanilla JavaScript (ES6+) for algorithm implementation and UI state.
+- Documentation: Detailed JSDoc comments for every function and section.
+
+B. Visual Design:
+- Modern Medical Aesthetic: Clean white and teal color palette.
+- Immersive 3D: A floating particle network represents the "Neural" 
+  connection of healthcare data.
+- User Experience: Non-blocking toast notifications and bouncy modal 
+  animations for a premium feel.
+
+C. Live Access:
+- Deployment: Hosted via GitHub Pages.
+- Live Link: https://ajaygangwar945.github.io/MedPath-Pro/
+
+============================================================================
+PREPARED BY: MedPath Pro Development Team
+============================================================================
