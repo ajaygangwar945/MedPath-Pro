@@ -1,10 +1,7 @@
-============================================================================
 PROJECT TITLE: MedPath Pro - Hospital Shortest Path Visualizer
 SUBTITLE: Streamlining Healthcare Logistics with Graph Theory
-============================================================================
 
 1. PROJECT OVERVIEW
-----------------------------------------------------------------------------
 MedPath Pro is an interactive web-based simulator designed to optimize the 
 transportation of patients to medical facilities. It provides a visual 
 platform where users can model real-world street networks, hospital locations, 
@@ -13,7 +10,6 @@ demonstrates how data-driven decisions can save critical time during
 medical emergencies.
 
 2. CORE ALGORITHM: DIJKSTRA'S ALGORITHM
-----------------------------------------------------------------------------
 The application is powered by Dijkstra's Algorithm, a fundamental graph 
 traversal algorithm used for finding the shortest paths between nodes in 
 a graph.
@@ -27,7 +23,6 @@ How it works in MedPath Pro:
   hospital, ensuring the absolute shortest path is found.
 
 3. USES & APPLICATIONS OF DIJKSTRA'S ALGORITHM
-----------------------------------------------------------------------------
 Dijkstra's algorithm is widely used across various industries:
 - GPS & Navigation: Found in apps like Google Maps for routing vehicles.
 - Logistics: Used for supply chain optimization and delivery routing.
@@ -36,7 +31,6 @@ Dijkstra's algorithm is widely used across various industries:
 - Robotics: Helps autonomous robots navigate paths while avoiding obstacles.
 
 4. PROJECT FUNCTIONALITIES
-----------------------------------------------------------------------------
 The application offers several interactive features for a full simulation:
 
 A. Dynamic Map Building:
@@ -60,7 +54,6 @@ E. Interactive Demo Data:
 - Pre-built medical networks to showcase complex routing scenarios immediately.
 
 5. TECHNICAL & OTHER DETAILS
-----------------------------------------------------------------------------
 A. Tech Stack:
 - Frontend: HTML5, CSS3 (Glassmorphism, CSS Variables).
 - Graphics: Canvas API (2D Rendering), Three.js (3D Animated Background).
@@ -78,6 +71,4 @@ C. Live Access:
 - Deployment: Hosted via GitHub Pages.
 - Live Link: https://ajaygangwar945.github.io/MedPath-Pro/
 
-============================================================================
 PREPARED BY: MedPath Pro Development Team
-============================================================================
