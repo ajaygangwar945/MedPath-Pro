@@ -1,74 +1,667 @@
-PROJECT TITLE: MedPath Pro - Hospital Shortest Path Visualizer
-SUBTITLE: Streamlining Healthcare Logistics with Graph Theory
+================================================================================
+  MEDPATH PRO — COMPLETE DSA (Data Structures & Algorithms) ANALYSIS DOCUMENT
+================================================================================
+  Project : MedPath Pro — Hospital Shortest Path Visualizer
+  Files   : index.html, script.js, style.css
+  Date    : 2026-02-24
+  Author  : Auto-generated analysis of full codebase
+================================================================================
 
-1. PROJECT OVERVIEW
-MedPath Pro is an interactive web-based simulator designed to optimize the 
-transportation of patients to medical facilities. It provides a visual 
-platform where users can model real-world street networks, hospital locations, 
-and patient positions. By visualizing shortest paths, the application 
-demonstrates how data-driven decisions can save critical time during 
-medical emergencies.
 
-2. CORE ALGORITHM: DIJKSTRA'S ALGORITHM
-The application is powered by Dijkstra's Algorithm, a fundamental graph 
-traversal algorithm used for finding the shortest paths between nodes in 
-a graph.
+--------------------------------------------------------------------------------
+  TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+  1.  Project Overview
+  2.  Project Architecture & File Summary
+  3.  DSA Topic 1 : GRAPH (Adjacency List / Edge List)
+  4.  DSA Topic 2 : DIJKSTRA'S ALGORITHM (Shortest Path)
+  5.  DSA Topic 3 : ARRAYS (dist[], prev[], visited[])
+  6.  DSA Topic 4 : LINEAR SEARCH
+  7.  DSA Topic 5 : EUCLIDEAN DISTANCE (Mathematical Formula)
+  8.  DSA Topic 6 : PATH RECONSTRUCTION (Backtracking via prev[])
+  9.  DSA Topic 7 : QUEUE / ANIMATION LOOP (requestAnimationFrame)
+  10. DSA Topic 8 : FILTERING & BOOLEAN FLAGS (State Management)
+  11. DSA Topic 9 : DUPLICATE DETECTION (Edge & Notification Guards)
+  12. DSA Topic 10: STRING OPERATIONS (Path Display & Rendering)
+  13. Complete Function-to-DSA Mapping Table
+  14. Algorithm Complexity Summary
+  15. Real-World Justification
+--------------------------------------------------------------------------------
 
-How it works in MedPath Pro:
-- Nodes: Represent Hospitals or Patients (Users).
-- Edges: Represent roads or paths connecting them.
-- Weights: Represent distances or travel times between locations.
-- The Algorithm: Starting from a specific patient, it explores every 
-  possible route, keeping track of the minimum "cost" to reach every 
-  hospital, ensuring the absolute shortest path is found.
 
-3. USES & APPLICATIONS OF DIJKSTRA'S ALGORITHM
-Dijkstra's algorithm is widely used across various industries:
-- GPS & Navigation: Found in apps like Google Maps for routing vehicles.
-- Logistics: Used for supply chain optimization and delivery routing.
-- Network Routing: Directs data packets across the internet to minimize latency.
-- Infrastructure Planning: Designing efficient power grids and water pipelines.
-- Robotics: Helps autonomous robots navigate paths while avoiding obstacles.
+================================================================================
+  1. PROJECT OVERVIEW
+================================================================================
 
-4. PROJECT FUNCTIONALITIES
-The application offers several interactive features for a full simulation:
+MedPath Pro is a browser-based, interactive hospital shortest-path visualizer
+that demonstrates Dijkstra's algorithm in a real-world medical scenario.
 
-A. Dynamic Map Building:
-- Add Users (Patients) and Hospitals by clicking anywhere on a 2D canvas.
-- Create Edges (Roads) between nodes and assign custom weights (Distances).
+CORE FUNCTIONALITY:
+  - Users build a graph by placing "User" nodes (patients) and "Hospital" nodes
+    on a canvas using mouse clicks.
+  - Connections (edges) between nodes are created interactively, with weights
+    automatically calculated from Euclidean pixel distances.
+  - Running Dijkstra's algorithm from any source node finds the shortest path
+    to every reachable hospital.
+  - Patients can "Notify Hospital" to send an emergency request.
+  - A hospital admin (secured by login) can Approve or Reject those requests.
+  - Approved paths are visually animated with a flowing dashed line on canvas.
+  - Bed count decreases automatically when a request is approved.
 
-B. Real-Time Pathfinding:
-- One-click execution of the shortest path calculation.
-- Instant visual highlighting of the optimal route in cyan.
+TECHNOLOGY STACK:
+  - Frontend: Plain HTML5, CSS3, Vanilla JavaScript (no frameworks)
+  - Rendering: HTML5 Canvas API (2D context)
+  - Icons: Font Awesome 6 CDN
+  - Fonts: Google Fonts (Inter)
 
-C. Hospital Resource Management (Portal):
-- Every hospital has a private "Dashboard" to manage bed availability.
-- Bed counts are updated in real-time as patients are admitted.
 
-D. Integrated Notification System:
-- Patients can "Notify" the nearest hospital via the sidebar.
-- Hospitals receive alerts and can "Approve" incoming patients.
-- Approval triggers a high-fidelity "Flow" animation along the shortest path.
+================================================================================
+  2. PROJECT ARCHITECTURE & FILE SUMMARY
+================================================================================
 
-E. Interactive Demo Data:
-- Pre-built medical networks to showcase complex routing scenarios immediately.
+FILE: index.html
+  - Defines the entire DOM structure (header, canvas, sidebar, portal, modals).
+  - Contains 7 modals: Instructions, Edit User, Edit Hospital, Admin Login.
+  - The <canvas id="graph-canvas"> is the primary rendering surface.
+  - All dynamic content is injected by script.js via innerHTML / appendChild.
+  - Loads script.js at the bottom of <body> to ensure DOM is ready.
 
-5. TECHNICAL & OTHER DETAILS
-A. Tech Stack:
-- Frontend: HTML5, CSS3 (Glassmorphism, CSS Variables).
-- Graphics: Canvas API (2D Rendering), Three.js (3D Animated Background).
-- Logic: Vanilla JavaScript (ES6+) for algorithm implementation and UI state.
-- Documentation: Detailed JSDoc comments for every function and section.
+FILE: script.js  (872 lines — main logic file)
+  SECTION 1 (Lines 1–78)   : State variables and DOM references.
+  SECTION 2 (Lines 79–185) : Canvas mouse interaction and node placement.
+  SECTION 3 (Lines 186–304): Hospital portal notifications (approve/reject).
+  SECTION 4 (Lines 442–491): Dijkstra's algorithm implementation.
+  SECTION 5 (Lines 493–655): Canvas rendering engine (drawGraph, animation).
+  SECTION 6 (Lines 656–743): Results display and notifications.
+  SECTION 7 (Lines 744–872): Button modes, demo data, modal controls.
 
-B. Visual Design:
-- Modern Medical Aesthetic: Clean white and teal color palette.
-- Immersive 3D: A floating particle network represents the "Neural" 
-  connection of healthcare data.
-- User Experience: Non-blocking toast notifications and bouncy modal 
-  animations for a premium feel.
+FILE: style.css  (893 lines — styling only, no DSA)
+  - Provides glassmorphism card styles, modal overlays, button states,
+    notification section headers (Pending/Approved/Rejected), toast animations,
+    admin login modal, badge, and logout button.
+  - No algorithmic logic; purely presentational.
 
-C. Live Access:
-- Deployment: Hosted via GitHub Pages.
-- Live Link: https://ajaygangwar945.github.io/MedPath-Pro/
 
-PREPARED BY: MedPath Pro Development Team
+================================================================================
+  3. DSA TOPIC 1 : GRAPH (Edge List Representation)
+================================================================================
+
+WHAT IS A GRAPH?
+  A Graph is a non-linear data structure consisting of:
+    - VERTICES (Nodes): Individual entities in the system.
+    - EDGES (Connections): Relationships or paths between nodes.
+  Graphs can be:
+    - Directed / Undirected
+    - Weighted / Unweighted
+    - Connected / Disconnected
+
+REPRESENTATION USED IN MEDPATH PRO:
+  MedPath Pro uses an EDGE LIST — two separate JavaScript arrays:
+
+    nodes[]  — Array of vertex objects.
+    edges[]  — Array of edge objects.
+
+  Each node object looks like:
+    {
+      id: 3,
+      x: 420,          // Canvas X coordinate
+      y: 180,          // Canvas Y coordinate
+      type: 'hospital',
+      name: 'West Medical',
+      availableBeds: 10
+    }
+
+  Each edge object looks like:
+    {
+      from: 1,    // Index of source node
+      to:   3,    // Index of destination node
+      weight: 25  // Path cost (derived from pixel distance / 10)
+    }
+
+WHY EDGE LIST (not Adjacency Matrix or Adjacency List)?
+  - The graph is SPARSE (few edges relative to nodes), making edge list
+    memory-efficient (O(E) space vs O(V²) for adjacency matrix).
+  - Nodes are dynamically added by the user, so a fixed-size matrix
+    is impractical.
+  - The edge list is easy to iterate for the Relaxation step of Dijkstra.
+
+WHERE USED IN CODE:
+  - DECLARED   : script.js, Lines 64–65
+      let nodes = [];
+      let edges = [];
+
+  - NODE ADDED : script.js, Lines 143–154 (canvas click handler)
+      nodes.push({ id, x, y, type, name, ... });
+
+  - EDGE ADDED : script.js, Lines 118–123 (edge creation mode)
+      edges.push({ from: selectedNodeIndex, to: clickedIndex, weight });
+
+  - GRAPH READ : script.js, Lines 474–487 (Dijkstra relaxation loop)
+      edges.forEach(edge => { ... check neighbors ... });
+
+  - GRAPH DRAW : script.js, Lines 504–520 (drawGraph function)
+      edges.forEach(edge => { ctx.moveTo(...); ctx.lineTo(...); });
+
+  - DEMO DATA  : script.js, Lines 777–804 (demoBtn click handler)
+      nodes = [ { id:0, type:'hospital' }, ... ];
+      edges = [ { from:0, to:1, weight:20 }, ... ];
+
+
+================================================================================
+  4. DSA TOPIC 2 : DIJKSTRA'S ALGORITHM (Single Source Shortest Path)
+================================================================================
+
+WHAT IS DIJKSTRA'S ALGORITHM?
+  Dijkstra's algorithm finds the SHORTEST PATH from a single SOURCE node to
+  all other reachable nodes in a weighted graph with NON-NEGATIVE edge weights.
+
+  It was developed by computer scientist Edsger W. Dijkstra in 1956.
+
+CORE IDEA:
+  Maintain a table of "best known distances" from the source. Repeatedly:
+    1. Pick the unvisited node with the smallest known distance (GREEDY step).
+    2. Relax all its neighbor edges: update neighbor's distance if a shorter
+       path through the current node exists.
+  Repeat until all nodes are visited or no reachable nodes remain.
+
+MEDPATH PRO IMPLEMENTATION:
+  Function: runDijkstra(source)   [script.js, Lines 450–491]
+
+  DATA STRUCTURES USED INSIDE:
+    dist[]    — Distance array. dist[i] = shortest known distance to node i.
+                Initialized to Infinity for all nodes except source (= 0).
+    prev[]    — Predecessor array. prev[i] = the node that leads to node i
+                on the shortest path. Used later for PATH RECONSTRUCTION.
+                Initialized to -1 (no predecessor known).
+    visited[] — Boolean array. visited[i] = true means node i is finalized
+                and its shortest distance will not change.
+                Initialized to false.
+
+  STEP-BY-STEP EXECUTION TRACE (example: source = node 1):
+
+    INITIALIZATION:
+      dist    = [INF, 0, INF, INF, INF, INF, ...]
+      prev    = [-1, -1, -1, -1, -1, -1, ...]
+      visited = [false, false, false, ...]
+
+    ITERATION 1:
+      - Find unvisited node with min dist → node 1 (dist = 0).
+      - Mark visited[1] = true.
+      - Relax edges from node 1:
+          edge (1→3, weight 25): dist[3] = 0 + 25 = 25 → update, prev[3] = 1
+          edge (1→5, weight 30): dist[5] = 0 + 30 = 30 → update, prev[5] = 1
+
+    ITERATION 2:
+      - Find unvisited node with min dist → node 3 (dist = 25).
+      - Mark visited[3] = true.
+      - Relax edges from node 3:
+          edge (3→5, weight 15): dist[5] = 25 + 15 = 40 > 30 → no update
+          edge (3→6, weight 20): dist[6] = 25 + 20 = 45 → update, prev[6] = 3
+
+    (continues until all reachable nodes are processed)
+
+    FINAL OUTPUT:
+      dist = [INF, 0, INF, 25, INF, 30, 45, ...]
+      prev = [-1, -1, -1, 1, -1, 1, 3, ...]
+
+  ACTUAL CODE:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │ function runDijkstra(source) {                                       │
+  │     const n = nodes.length;                                         │
+  │     const dist    = Array(n).fill(Infinity);                        │
+  │     const prev    = Array(n).fill(-1);                              │
+  │     const visited = Array(n).fill(false);                           │
+  │     dist[source]  = 0;                                              │
+  │                                                                     │
+  │     for (let i = 0; i < n; i++) {                                   │
+  │         // SELECTION STEP: find unvisited node with min distance    │
+  │         let u = -1;                                                 │
+  │         for (let j = 0; j < n; j++) {                               │
+  │             if (!visited[j] && (u === -1 || dist[j] < dist[u]))    │
+  │                 u = j;                                              │
+  │         }                                                           │
+  │         if (u === -1 || dist[u] === Infinity) break;               │
+  │         visited[u] = true;                                          │
+  │                                                                     │
+  │         // RELAXATION STEP: update neighbors                        │
+  │         edges.forEach(edge => {                                     │
+  │             let v = -1;                                             │
+  │             if (edge.from === u) v = edge.to;                       │
+  │             else if (edge.to === u) v = edge.from;                  │
+  │             if (v !== -1 && !visited[v]) {                          │
+  │                 const alt = dist[u] + edge.weight;                  │
+  │                 if (alt < dist[v]) {                                │
+  │                     dist[v] = alt;                                  │
+  │                     prev[v] = u;                                    │
+  │                 }                                                   │
+  │             }                                                       │
+  │         });                                                         │
+  │     }                                                               │
+  │     return { dist, prev };                                          │
+  │ }                                                                   │
+  └─────────────────────────────────────────────────────────────────────┘
+
+WHERE CALLED IN CODE:
+  - runBtn click handler     : script.js, Line 829   (manual run)
+  - approveNotification()    : script.js, Line 270   (on approval, for flow)
+  - drawGraph() animation    : script.js, Line 547   (per approved notification)
+  - displayResults()         : calls shortestPaths = runDijkstra(source)
+
+TIME COMPLEXITY  : O(V²)   — due to linear search for minimum each iteration.
+SPACE COMPLEXITY : O(V)    — three arrays of size V (nodes count).
+
+NOTE: An optimized version would use a MIN-HEAP (Priority Queue) to get O((V+E)
+log V) time. MedPath Pro uses O(V²) which is acceptable for small web graphs.
+
+
+================================================================================
+  5. DSA TOPIC 3 : ARRAYS (dist[], prev[], visited[])
+================================================================================
+
+WHAT IS AN ARRAY?
+  An Array is a linear data structure storing elements at contiguous memory
+  locations, accessible in O(1) time via index.
+
+THREE KEY ARRAYS IN DIJKSTRA:
+
+  dist[]  (Distance Array)
+    - Type     : Array of numbers
+    - Size     : n (number of nodes)
+    - Purpose  : Stores the shortest distance discovered so far from source
+                 to each node.
+    - Init     : Array(n).fill(Infinity)
+    - Update   : dist[v] = dist[u] + edge.weight  (during relaxation)
+    - Used At  : script.js, Lines 452, 456, 463, 481–483, 666
+
+  prev[]  (Predecessor Array)
+    - Type     : Array of integers (node indices)
+    - Size     : n
+    - Purpose  : For each node, stores the previous node on the shortest path.
+                 Allows BACKTRACKING to reconstruct the full path.
+    - Init     : Array(n).fill(-1)  (-1 means "no predecessor")
+    - Update   : prev[v] = u  (when a shorter path through u is found)
+    - Used At  : script.js, Lines 453, 484, 529, 561, 672–676
+
+  visited[]  (Visited/Finalized Set)
+    - Type     : Array of booleans
+    - Size     : n
+    - Purpose  : Tracks which nodes have been "finalized" (their shortest
+                 path is confirmed and won't improve further).
+    - Init     : Array(n).fill(false)
+    - Update   : visited[u] = true (when node u is selected and processed)
+    - Used At  : script.js, Lines 454, 463, 470, 480
+
+DEMO-DATA ARRAYS:
+  nodes[] and edges[] are also plain arrays used to store the graph.
+  They are populated from hardcoded demo data at script.js Lines 777–803.
+
+
+================================================================================
+  6. DSA TOPIC 4 : LINEAR SEARCH
+================================================================================
+
+WHAT IS LINEAR SEARCH?
+  Linear Search scans each element of an array one by one until the target
+  is found or the array ends. Time Complexity: O(n).
+
+WHERE USED:
+
+  A) MINIMUM SELECTION IN DIJKSTRA (Lines 462–465)
+     The "Selection Step" scans all nodes to find the unvisited one with the
+     smallest distance value. This is a LINEAR SEARCH through dist[].
+
+       for (let j = 0; j < n; j++) {
+           if (!visited[j] && (u === -1 || dist[j] < dist[u])) {
+               u = j;
+           }
+       }
+
+  B) findNodeAt(x, y) FUNCTION (Lines 425–433)
+     When user clicks on the canvas, the code searches all nodes linearly
+     to find which node (if any) exists within 25px of the click.
+
+       function findNodeAt(x, y) {
+           const radius = 25;
+           for (let i = 0; i < nodes.length; i++) {
+               const dx = nodes[i].x - x;
+               const dy = nodes[i].y - y;
+               if (Math.sqrt(dx*dx + dy*dy) < radius) return i;
+           }
+           return null;
+       }
+
+  C) EDGE DUPLICATE CHECK (Lines 113–116)
+     Before adding an edge, a linear search checks if an edge between the
+     same two nodes already exists.
+
+       const exists = edges.some(e =>
+           (e.from === selectedNodeIndex && e.to === clickedIndex) ||
+           (e.from === clickedIndex && e.to === selectedNodeIndex)
+       );
+
+
+================================================================================
+  7. DSA TOPIC 5 : EUCLIDEAN DISTANCE (Mathematical Formula)
+================================================================================
+
+WHAT IS EUCLIDEAN DISTANCE?
+  The straight-line distance between two points (x1,y1) and (x2,y2) in 2D
+  space, calculated as: d = sqrt((x2-x1)^2 + (y2-y1)^2)
+
+WHERE USED:
+
+  A) EDGE WEIGHT CALCULATION (Lines 111, 121, 438–440)
+     When a user draws an edge between two nodes, the edge's weight is
+     automatically derived from the pixel distance between the two canvas nodes.
+
+       function calculateDistance(a, b) {
+           return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+       }
+       // Weight = distance in pixels / 10 (scaled to smaller units)
+       const dist = calculateDistance(nodes[selectedNodeIndex], nodes[clickedIndex]);
+       weight: Math.round(dist / 10)
+
+  B) NODE HIT-TEST in findNodeAt() (Lines 428–430)
+     Uses the same distance formula (simplified as dx²+dy²) to check if
+     a click falls within the circular node boundary (radius = 25px).
+
+       const dx = nodes[i].x - x;
+       const dy = nodes[i].y - y;
+       if (Math.sqrt(dx * dx + dy * dy) < radius) return i;
+
+SIGNIFICANCE:
+  By deriving edge weights from real canvas coordinates, the graph
+  weights become geometrically meaningful — longer visual edges produce
+  higher weights, making the shortest path result intuitive.
+
+
+================================================================================
+  8. DSA TOPIC 6 : PATH RECONSTRUCTION (Backtracking via prev[])
+================================================================================
+
+WHAT IS PATH RECONSTRUCTION?
+  After Dijkstra builds the prev[] array, we can reconstruct the exact
+  sequence of nodes on the shortest path by following prev[] backwards
+  from the target to the source.
+
+HOW IT WORKS:
+  Start at destination node. Follow prev[node] repeatedly until reaching
+  the source (prev[source] = -1). Then REVERSE the collected sequence.
+
+  Example:
+    prev = [-1, -1, -1, 1, -1, 1, 3, ...]
+    To find path from source(1) to node(6):
+      curr = 6 → push "node6", prev[6] = 3
+      curr = 3 → push "node3", prev[3] = 1
+      curr = 1 → push "node1", prev[1] = -1 → STOP
+    Collected: ["node6", "node3", "node1"]
+    After reverse: ["node1", "node3", "node6"]
+    Display: "Alice → West Medical → Diana"
+
+WHERE USED:
+
+  A) displayResults() FUNCTION — Sidebar Path Display (Lines 670–677)
+       const path = [];
+       let curr = i;
+       while (curr !== -1) {
+           path.push(nodes[curr].name);
+           curr = shortestPaths.prev[curr];
+       }
+       path.reverse();
+       // Renders: "Alice Smith → West Medical → Diana Prince"
+
+  B) drawGraph() — STATIC PATH HIGHLIGHT (Lines 526–539)
+     Draws cyan highlighted edges by backtracking prev[] for each node.
+       let curr = i;
+       while (shortestPaths.prev[curr] !== -1) {
+           const p = shortestPaths.prev[curr];
+           ctx.moveTo(nodes[curr].x, nodes[curr].y);
+           ctx.lineTo(nodes[p].x, nodes[p].y);
+           curr = p;
+       }
+
+  C) drawGraph() — ANIMATED PATH for approved notifications (Lines 560–588)
+     Same backtracking used to draw the animated teal dashed flow line
+     on approved emergency paths.
+
+
+================================================================================
+  9. DSA TOPIC 7 : ANIMATION LOOP (requestAnimationFrame)
+================================================================================
+
+WHAT IS AN ANIMATION LOOP?
+  A repeated function call that updates and redraws content at the screen's
+  refresh rate (typically 60fps). It forms a "render loop" — like a queue of
+  draw operations where each frame triggers the next.
+
+  The browser's requestAnimationFrame(callback) API schedules callback to
+  be called just before the next repaint, making animations smooth and
+  battery-efficient.
+
+WHERE USED: startAnimationLoop() — Lines 642–655
+
+    function startAnimationLoop() {
+        if (isAnimating) return;     // Guard: only one loop at a time
+        isAnimating = true;
+        function animate() {
+            drawGraph();             // Redraw entire canvas each frame
+            // Continue animating only while active approved paths exist
+            if (notifications.some(n => n.status === 'approved')) {
+                requestAnimationFrame(animate);  // Queue next frame
+            } else {
+                isAnimating = false; // Stop loop when no approved paths
+            }
+        }
+        animate(); // Kick off the loop
+    }
+
+ANIMATION MECHANISM — ANIMATED DASH OFFSET (Lines 556–558):
+  Inside drawGraph(), approved paths use a time-based lineDashOffset to
+  simulate a "flowing" effect along the edge line.
+
+    const dashOffset = (Date.now() / 40) % 30;
+    ctx.setLineDash([15, 15]);
+    ctx.lineDashOffset = dashOffset;
+
+  As dashOffset increases every frame, the dashes appear to "travel" along
+  the path from source to hospital — visually showing the patient arriving.
+
+PURPOSE: After a hospital approves a request, the matched shortest path
+is animated with a moving dashed cyan line, representing the patient's
+real-time journey to the hospital.
+
+
+================================================================================
+  10. DSA TOPIC 8 : FILTERING & BOOLEAN FLAGS (State Management)
+================================================================================
+
+WHAT IS STATE MANAGEMENT?
+  Using variables (flags) and array filters to track the current system
+  state and control program behavior.
+
+KEY STATE VARIABLES (script.js, Lines 63–77):
+  nodes[]                   — The graph vertices (dynamic array)
+  edges[]                   — The graph edges (dynamic array)
+  notifications[]           — All emergency request objects
+  currentMode               — 'user' | 'hospital' | 'edge'
+  selectedNodeIndex         — First clicked node during edge creation
+  editingNodeIndex          — Node currently being edited in a modal
+  currentlyActiveHospitalIndex — Which hospital portal is open
+  shortestPaths             — Stores { dist[], prev[] } from Dijkstra
+  isAnimating               — Whether the animation loop is running
+  isAdminLoggedIn           — Admin session flag (true/false)
+  pendingHospitalIndex      — Hospital to open after login succeeds
+
+ARRAY FILTERING (JavaScript .filter()):
+  Used extensively to derive subsets of the notifications array:
+
+    // All notifications for this hospital:
+    const all = notifications.filter(n => n.targetNodeIndex === currentlyActiveHospitalIndex);
+
+    // Pending only:
+    const pending = all.filter(n => n.status === 'pending');
+
+    // Approved only:
+    const approved = all.filter(n => n.status === 'approved');
+
+    // Rejected only:
+    const rejected = all.filter(n => n.status === 'rejected');
+
+  These are used in renderPortalNotifications() (Lines 191–254) to render
+  three distinct coloured sections in the hospital dashboard.
+
+BOOLEAN FLAG GUARDS:
+  - isAdminLoggedIn   : Controls whether Approve/Reject buttons appear.
+                        Controls whether portal opens directly or shows login.
+  - isAnimating       : Prevents multiple nested animation loops.
+  - visited[]         : Inside Dijkstra, ensures each node is processed once.
+
+
+================================================================================
+  11. DSA TOPIC 9 : DUPLICATE DETECTION
+================================================================================
+
+WHAT IS DUPLICATE DETECTION?
+  Checking whether an item already exists before adding it, preventing
+  data integrity issues. Uses Array.some() — O(n) scan.
+
+WHERE USED:
+
+  A) EDGE DUPLICATE GUARD (Lines 113–116)
+     Before adding an edge, checks if a connection between the same pair
+     of nodes already exists (in either direction, since graph is undirected).
+
+       const exists = edges.some(e =>
+           (e.from === selectedNodeIndex && e.to === clickedIndex) ||
+           (e.from === clickedIndex && e.to === selectedNodeIndex)
+       );
+       if (!exists) { edges.push({ ... }); }
+
+  B) NOTIFICATION DUPLICATE GUARD — sendNotification() (Lines 727–731)
+     Prevents a user from sending multiple pending requests to the same
+     hospital simultaneously.
+
+       const exists = notifications.some(n =>
+           n.sourceNodeIndex === sourceIdx &&
+           n.targetNodeIndex === targetIdx &&
+           n.status === 'pending'
+       );
+       if (exists) {
+           showToast("A notification is already pending.", "error");
+           return;
+       }
+
+
+================================================================================
+  12. DSA TOPIC 10 : STRING OPERATIONS (Path Display)
+================================================================================
+
+WHAT ARE STRING OPERATIONS?
+  Manipulating arrays of strings to produce human-readable output.
+  Key JavaScript methods used: .push(), .reverse(), .join().
+
+WHERE USED — displayResults() and sendNotification() (Lines 670–677, 738):
+
+  Building the path string:
+    const path = [];
+    let curr = targetNodeIndex;
+    while (curr !== -1) {
+        path.push(nodes[curr].name);   // Push name strings into array
+        curr = shortestPaths.prev[curr];
+    }
+    path.reverse();                    // Reverse to get source → target order
+    path.join(' → ')                   // Join with arrow: "Alice → Hospital"
+
+  This string is:
+    - Displayed in the sidebar path cards (div.path-visual).
+    - Stored in the notification object (notif.path) for display in
+      the hospital portal after approval.
+    - Shown in the portal card: "Path: Alice Smith → West Medical"
+
+
+================================================================================
+  13. COMPLETE FUNCTION-TO-DSA MAPPING TABLE
+================================================================================
+
+  FUNCTION / FEATURE               | FILE:LINES      | DSA TOPIC(S) USED
+  ---------------------------------|-----------------|---------------------------
+  nodes[], edges[] declaration     | script.js:64-65 | Graph (Edge List)
+  canvas mousedown handler         | script.js:95-158| Linear Search, Graph
+  findNodeAt(x, y)                 | script.js:425-433| Linear Search, Euclidean
+  calculateDistance(a, b)          | script.js:438-440| Euclidean Distance
+  runDijkstra(source)              | script.js:450-491| Dijkstra, Array, Linear
+  drawGraph() — edge drawing       | script.js:504-520| Graph traversal
+  drawGraph() — path highlight     | script.js:522-539| Path Reconstruction
+  drawGraph() — animated paths     | script.js:542-591| Animation, Path Recon
+  startAnimationLoop()             | script.js:642-655| Animation Loop (RAF)
+  displayResults(source)           | script.js:660-697| Path Reconstruction, String
+  sendNotification()               | script.js:722-743| Duplicate Detection, Array
+  renderPortalNotifications()      | script.js:191-254| Filtering, State Mgmt
+  approveNotification(idx)         | script.js:259-287| Graph Update, Dijkstra
+  rejectNotification(idx)          | script.js:292-304| State Management
+  Edge creation guard              | script.js:113-116| Duplicate Detection
+  updateBtnStates()                | script.js:757-762| Boolean State
+  demoBtn data (nodes/edges)       | script.js:777-804| Graph (Edge List)
+  Admin login: isAdminLoggedIn     | script.js:75-77 | Boolean Flag
+  Admin login: pendingHospital     | script.js:77    | State Management
+
+
+================================================================================
+  14. ALGORITHM COMPLEXITY SUMMARY
+================================================================================
+
+  ALGORITHM/OPERATION           | TIME COMPLEXITY  | SPACE COMPLEXITY
+  ------------------------------|------------------|-------------------
+  Dijkstra's (this impl.)       | O(V²)           | O(V)
+  Dijkstra's (optimal w/ heap)  | O((V+E) log V)  | O(V)
+  findNodeAt() — node hit test  | O(N)            | O(1)
+  Edge duplicate check          | O(E)            | O(1)
+  Notification duplicate check  | O(N)            | O(1)
+  Path reconstruction           | O(V)            | O(V)  [path array]
+  renderPortalNotifications()   | O(N)            | O(1)
+  drawGraph()                   | O(V + E)        | O(1)
+  Animation frame (RAF)         | O(V + E) / frame| O(1)
+
+  Where: V = number of nodes, E = number of edges, N = array length.
+
+  CURRENT SCALE: The demo has 15 nodes, 18 edges.
+  Dijkstra runs in milliseconds. O(V²) is more than adequate.
+
+
+================================================================================
+  15. REAL-WORLD JUSTIFICATION OF DSA CHOICES
+================================================================================
+
+  DSA USED          | REAL-WORLD REASON IN MEDPATH PRO
+  ------------------|----------------------------------------------------------
+  Graph             | The city road/path network IS a graph. Hospitals and
+                    | patients are nodes; roads between them are edges.
+  --------------------------------------------------------------------------
+  Dijkstra's Algo   | Emergency routing: find the NEAREST hospital with beds.
+                    | Dijkstra guarantees the optimal (shortest/fastest) route.
+  --------------------------------------------------------------------------
+  Edge List         | Road networks are sparse (few roads per intersection).
+                    | Edge list saves memory vs adjacency matrix.
+  --------------------------------------------------------------------------
+  Euclidean Distance| Approximates real distance between locations on a 2D map.
+                    | Weight = distance/10 mimics km or travel time.
+  --------------------------------------------------------------------------
+  prev[] array      | Shows the exact route a patient must travel, not just
+                    | the cost. Essential for navigation instructions.
+  --------------------------------------------------------------------------
+  RAF Animation     | Visual feedback is critical in emergency scenarios.
+                    | Animated paths show admins the current patient journey.
+  --------------------------------------------------------------------------
+  Duplicate Guard   | Prevents spam requests to the same hospital, simulating
+                    | real hospital systems that queue one request at a time.
+  --------------------------------------------------------------------------
+  Boolean Flags     | Session management (isAdminLoggedIn) ensures only
+                    | authorized admins can approve emergency requests.
+  --------------------------------------------------------------------------
+  Array Filtering   | Grouping notifications (Pending/Approved/Rejected) gives
+                    | hospital admins a clear organised dashboard view.
+
+
+================================================================================
+  END OF MEDPATH PRO DSA ANALYSIS DOCUMENT
+================================================================================

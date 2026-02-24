@@ -1,0 +1,14 @@
+{
+    "name": "medpath-pro",
+    "version": "1.0.0",
+    "description": "Hospital Shortest Path Visualizer - Full Stack",
+    "main": "server/index.js",
+    "scripts": {
+        "start": "node server/index.js",
+        "dev": "node server/index.js",
+        "seed": "node server/seed.js"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}
