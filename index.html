@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPath Pro</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='%2314b8a6' stroke-width='8'/><rect x='45' y='25' width='10' height='50' fill='%2314b8a6' rx='2'/><rect x='25' y='45' width='50' height='10' fill='%2314b8a6' rx='2'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+    <div id="three-container"></div>
+    <header>
+        <div class="logo-area">
+            <svg class="med-logo" viewBox="0 0 100 100" width="40" height="40">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="8" />
+                <rect x="45" y="25" width="10" height="50" fill="currentColor" rx="2" />
+                <rect x="25" y="45" width="50" height="10" fill="currentColor" rx="2" />
+                <circle cx="50" cy="50" r="5" fill="white" />
+            </svg>
+            <h1>MedPath Pro</h1>
+        </div>
+        <div class="header-actions">
+            <div class="info-icon" title="Instructions"><i class="fas fa-circle-question"></i></div>
+        </div>
+    </header>
+
+    <div id="app-shell">
+        <main>
+            <div id="canvas-container">
+                <canvas id="graph-canvas"></canvas>
+                <div id="empty-state">Click to add hospitals or users</div>
+            </div>
+        </main>
+
+        <aside id="results-sidebar">
+            <h3>Shortest Paths</h3>
+            <div id="pathsList" class="paths-container">
+                <div class="empty-hint">Paths will appear here after calculation</div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Hospital Portal (Hidden by default) -->
+    <div id="hospital-portal" class="hidden">
+        <div class="portal-header">
+            <button id="backToMapBtn" class="btn"><i class="fas fa-arrow-left"></i> Back to Map</button>
+            <h2 id="portal-hosp-name">Hospital Dashboard</h2>
+        </div>
+        <div class="portal-grid">
+            <div class="portal-card stats-card">
+                <h3>Hospital Status</h3>
+                <div class="stat-item">
+                    <label>Available Beds:</label>
+                    <span id="portal-beds-count">0</span>
+                </div>
+                <button id="editPortalHospBtn" class="btn btn-outline btn-block">Edit Hospital Settings</button>
+            </div>
+            <div class="portal-card requests-card">
+                <h3>Emergency Notifications</h3>
+                <div id="notification-list" class="notification-container">
+                    <!-- Notifications will appear here -->
+                    <div class="empty-hint">No incoming notifications</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="toolbar">
+            <div class="left-group">
+                <button id="addUserBtn" class="btn active"><i class="fas fa-user"></i> Add User</button>
+                <button id="addHospitalBtn" class="btn"><i class="fas fa-hospital"></i> Add Hospital</button>
+                <button id="addEdgeBtn" class="btn"><i class="fas fa-plus"></i> Add Edges</button>
+            </div>
+            <div class="center-group">
+                <div class="input-container">
+                    <label for="sourceNode">Source ID:</label>
+                    <input type="text" id="sourceNode" placeholder="ID">
+                </div>
+                <button id="runBtn" class="btn btn-run">Run Dijkstra</button>
+            </div>
+            <div class="right-group">
+                <button id="demoBtn" class="btn">Demo Data</button>
+                <button id="clearBtn" class="btn btn-outline">Clear</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <div class="close-modal"><i class="fas fa-xmark"></i></div>
+            <h2>How to Use</h2>
+            <ul>
+                <li><strong>Add Nodes:</strong> Select "Add User" or "Add Hospital" and click on the canvas.</li>
+                <li><strong>Add Edges:</strong> Select "Add Edges", then click the source node and the target node.</li>
+                <li><strong>View Info:</strong> Click any existing node to view its details.</li>
+                <li><strong>Calculate:</strong> Enter a Source Node ID and click "Run Dijkstra".</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editNodeModal" class="modal">
+        <div class="modal-content">
+            <div class="close-modal"><i class="fas fa-xmark"></i></div>
+            <h2>Edit User Details</h2>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="edit-node-name" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="edit-node-phone" placeholder="+1 234 567 890">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="edit-node-email" placeholder="example@gmail.com">
+            </div>
+            <button id="save-node-btn" class="btn btn-run btn-block">Save Changes</button>
+        </div>
+    </div>
+
+    <!-- Edit Hospital Modal -->
+    <div id="editHospitalModal" class="modal">
+        <div class="modal-content">
+            <div class="close-modal"><i class="fas fa-xmark"></i></div>
+            <h2>Edit Hospital Details</h2>
+            <div class="form-group">
+                <label>Hospital Name</label>
+                <input type="text" id="edit-hosp-name" placeholder="City General">
+            </div>
+            <div class="form-group">
+                <label>Available Beds</label>
+                <input type="number" id="edit-hosp-beds" placeholder="20">
+            </div>
+            <button id="save-hosp-btn" class="btn btn-run btn-block">Save Changes</button>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+
+</html>
