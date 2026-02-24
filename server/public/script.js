@@ -8,7 +8,7 @@
 // 1. API CONFIG & AUTH HELPERS
 // ============================================================================
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 /** Returns Authorization header object if a JWT token is stored. */
 function authHeaders() {
