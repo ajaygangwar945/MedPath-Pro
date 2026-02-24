@@ -101,6 +101,7 @@ const closeForgotModal = document.getElementById('closeForgotModal');
 // --- Admin Dashboard ---
 const adminDashboard = document.getElementById('admin-dashboard');
 const adminDashLogoutBtn = document.getElementById('adminDashLogoutBtn');
+const adminBackBtn = document.getElementById('adminBackBtn');
 const adminEmailTag = document.getElementById('adminEmailTag');
 
 // --- Application State (mirrors DB data) ---
@@ -551,6 +552,11 @@ adminDashLogoutBtn.onclick = () => {
     showToast('Admin logged out.');
 };
 
+// Back to Map from dashboard
+adminBackBtn.onclick = () => {
+    adminDashboard.classList.add('hidden');
+};
+
 // Backdrop click to close login modals
 window.addEventListener('click', e => {
     if (e.target === adminLoginModal) adminLoginModal.style.display = 'none';
@@ -605,7 +611,16 @@ function renderAdminUsers() {
         grid.innerHTML = '<div class="empty-hint">No users registered yet.</div>';
         return;
     }
-    grid.innerHTML = users.map(u => `
+    grid.innerHTML = users.map(u => {
+        const approveBtn = u.approved
+            ? `<button class="admin-btn-unapprove" onclick="adminApproveNode('${u._id}', false)">
+                   <i class="fas fa-circle-xmark"></i> Unapprove
+               </button>`
+            : `<button class="admin-btn-approve" onclick="adminApproveNode('${u._id}', true)">
+                   <i class="fas fa-circle-check"></i> Approve
+               </button>`;
+
+        return `
         <div class="admin-card user-card">
             <div class="admin-card-icon"><i class="fas fa-user"></i></div>
             <div class="admin-card-info">
@@ -613,14 +628,22 @@ function renderAdminUsers() {
                 <p><i class="fas fa-phone"></i> ${u.phone || 'N/A'}</p>
                 <p><i class="fas fa-envelope"></i> ${u.email || 'N/A'}</p>
                 <p><i class="fas fa-map-marker-alt"></i> x:${Math.round(u.x)}, y:${Math.round(u.y)}</p>
+                <div class="status-badge ${u.approved ? 'status-approved' : 'status-pending'}">
+                    ${u.approved ? 'Approved' : 'Pending'}
+                </div>
             </div>
             <div class="admin-card-actions">
+                ${approveBtn}
+                <button class="admin-btn-edit" onclick="adminEditNode(${nodes.indexOf(u)})">
+                    <i class="fas fa-pen-to-square"></i> Edit
+                </button>
                 <button class="admin-btn-delete" onclick="adminDeleteNode('${u._id}')">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function renderAdminHospitals() {
@@ -644,6 +667,9 @@ function renderAdminHospitals() {
             <div class="admin-card-actions">
                 <button class="admin-btn-approve" onclick="adminApproveAllPending('${h.id}')">
                     <i class="fas fa-circle-check"></i> Approve All
+                </button>
+                <button class="admin-btn-edit" onclick="adminEditNode(${nodes.indexOf(h)})">
+                    <i class="fas fa-pen-to-square"></i> Edit
                 </button>
                 <button class="admin-btn-delete" onclick="adminDeleteNode('${h._id}')">
                     <i class="fas fa-trash"></i> Delete
@@ -745,6 +771,23 @@ async function adminRejectReq(notifId) {
     if (n) n.status = 'rejected';
     renderAdminRequests();
     showToast('Request rejected.', 'error');
+}
+
+// Admin: approve/unapprove a node
+async function adminApproveNode(mongoId, approved) {
+    const [data, err] = await apiFetch(`${API}/nodes/${mongoId}/approve`, {
+        method: 'PATCH',
+        body: JSON.stringify({ approved })
+    });
+    if (err) return showToast(err, 'error');
+
+    showToast(`Node ${approved ? 'approved' : 'unapproved'}!`);
+    await openAdminDashboard();
+}
+
+// Admin: open edit modal from dashboard
+function adminEditNode(index) {
+    openEditModal(index);
 }
 
 // ============================================================================
