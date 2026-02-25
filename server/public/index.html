@@ -2,324 +2,336 @@
 <html lang="en">
 
 <head>
-    <!-- 
-    ============================================================================
-       MEDPATH PRO - HEAD CONFIGURATION
-       Includes metadata, typography, and external libraries.
-    ============================================================================
-    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedPath Pro | Hospital Path Visualizer</title>
-
-    <!-- Dynamic SVG Icon (MedPath Cross with teal circle) -->
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='%2314b8a6' stroke-width='8'/><rect x='45' y='25' width='10' height='50' fill='%2314b8a6' rx='2'/><rect x='25' y='45' width='50' height='10' fill='%2314b8a6' rx='2'/></svg>">
-
-    <!-- External Assets -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-
+    <title>MedPath Pro | Smart Dijkstra Pathfinding</title>
+    <link rel="stylesheet" href="landing.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Three.js for Landing Page Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 
 <body>
-    <!-- HEADER: Logo and high-level actions -->
-    <header>
-        <div class="logo-area">
-            <svg class="med-logo" viewBox="0 0 100 100" width="40" height="40">
+    <!-- PRELOADER: Premium loading experience -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <svg class="med-logo loader-logo" viewBox="0 0 100 100" width="80" height="80">
                 <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="8" />
                 <rect x="45" y="25" width="10" height="50" fill="currentColor" rx="2" />
                 <rect x="25" y="45" width="50" height="10" fill="currentColor" rx="2" />
                 <circle cx="50" cy="50" r="5" fill="white" />
             </svg>
-            <h1>MedPath Pro</h1>
-        </div>
-        <div class="header-actions">
-            <!-- Admin button: opens admin login modal -->
-            <button id="adminHeaderBtn" class="admin-header-btn" title="Admin Panel">
-                <i class="fas fa-shield-halved"></i> Admin
-            </button>
-            <!-- info-icon triggers the instruction modal -->
-            <div class="info-icon" title="Instructions"><i class="fas fa-circle-question"></i></div>
-        </div>
-    </header>
-
-    <!-- MAIN APP SHELL: Contains the interactive canvas and results sidebar -->
-    <div id="app-shell">
-        <main>
-            <!-- CANVAS AREA: Where graph nodes and edges are drawn -->
-            <div id="canvas-container">
-                <canvas id="graph-canvas"></canvas>
-                <!-- empty-state: Helper text visible when no nodes are present -->
-                <div id="empty-state">Click to add hospitals or users</div>
+            <div class="loader-track">
+                <div class="loader-fill"></div>
             </div>
-        </main>
-
-        <!-- SIDEBAR: Lists the calculated shortest paths and action buttons -->
-        <aside id="results-sidebar">
-            <h3>Shortest Paths</h3>
-            <div id="pathsList" class="paths-container">
-                <div class="empty-hint">Paths will appear here after calculation</div>
-            </div>
-        </aside>
-    </div>
-
-    <!-- HOSPITAL PORTAL: Dynamic overlay dashboard for resource management (hidden by default) -->
-    <div id="hospital-portal" class="hidden">
-        <div class="portal-header">
-            <button id="backToMapBtn" class="btn"><i class="fas fa-arrow-left"></i> Back to Map</button>
-            <h2 id="portal-hosp-name">Hospital Dashboard</h2>
-            <div class="portal-header-right">
-                <span id="admin-badge" class="admin-badge hidden"><i class="fas fa-shield-halved"></i> Admin</span>
-                <button id="logoutBtn" class="btn btn-logout hidden"><i class="fas fa-right-from-bracket"></i>
-                    Logout</button>
-            </div>
-        </div>
-        <div class="portal-grid">
-            <!-- Left Card: Stats and manual settings -->
-            <div class="portal-card stats-card">
-                <h3>Hospital Status</h3>
-                <div class="stat-item">
-                    <label>Available Beds:</label>
-                    <span id="portal-beds-count">0</span>
-                </div>
-                <button id="editPortalHospBtn" class="btn btn-outline btn-block">Edit Hospital Settings</button>
-            </div>
-            <!-- Right Card: Interactive list of incoming patient requests -->
-            <div class="portal-card requests-card">
-                <h3>Emergency Notifications</h3>
-                <div id="notification-list" class="notification-container">
-                    <div class="empty-hint">No incoming notifications</div>
-                </div>
-            </div>
+            <p class="loader-text">Initializing MedPath Pro...</p>
         </div>
     </div>
 
-    <!-- ================================================================
-         ADMIN DASHBOARD OVERLAY (full-screen, requires login)
-         ================================================================ -->
-    <div id="admin-dashboard" class="hidden">
-        <div class="admin-dash-header">
-            <div class="admin-dash-logo">
-                <i class="fas fa-shield-halved"></i>
-                <div>
-                    <h2>Admin Dashboard</h2>
-                    <span>MedPath Pro Control Panel</span>
-                </div>
+    <!-- 3D Background Container -->
+    <div id="landing-bg-canvas"></div>
+
+    <div class="glow-bg"></div>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-hand-holding-medical"></i>
+                <span>MedPath Pro</span>
             </div>
-            <div class="admin-dash-actions">
-                <button id="adminBackBtn" class="btn btn-outline">
-                    <i class="fas fa-arrow-left"></i> Back to Map
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-toggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
                 </button>
-                <span class="admin-email-tag" id="adminEmailTag"><i class="fas fa-user-shield"></i>
-                    admin@medpath.pro</span>
-                <button id="adminDashLogoutBtn" class="btn btn-logout">
-                    <i class="fas fa-right-from-bracket"></i> Logout
-                </button>
+                <a href="app.html" class="nav-btn">Open App</a>
             </div>
         </div>
+    </nav>
 
-        <!-- Stats bar -->
-        <div class="admin-stats-bar">
-            <div class="admin-stat">
-                <i class="fas fa-users"></i>
-                <div><span id="statUserCount">0</span><label>Total Users</label></div>
-            </div>
-            <div class="admin-stat">
-                <i class="fas fa-hospital"></i>
-                <div><span id="statHospCount">0</span><label>Hospitals</label></div>
-            </div>
-            <div class="admin-stat">
-                <i class="fas fa-clock"></i>
-                <div><span id="statPendingCount">0</span><label>Pending Requests</label></div>
-            </div>
-            <div class="admin-stat">
-                <i class="fas fa-circle-check"></i>
-                <div><span id="statApprovedCount">0</span><label>Approved</label></div>
-            </div>
-        </div>
-
-        <!-- Tab switcher -->
-        <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="users">
-                <i class="fas fa-users"></i> Users
-            </button>
-            <button class="admin-tab" data-tab="hospitals">
-                <i class="fas fa-hospital"></i> Hospitals
-            </button>
-            <button class="admin-tab" data-tab="requests">
-                <i class="fas fa-bell"></i> Requests
-            </button>
-        </div>
-
-        <!-- Tab content panels -->
-        <div class="admin-tab-content">
-            <!-- USERS tab -->
-            <div id="tab-users" class="admin-panel active">
-                <div id="usersGrid" class="admin-card-grid">
-                    <div class="empty-hint">No users registered yet. Add users on the visualizer map.</div>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="reveal-text">Navigating <span>Healthcare</span> with Precision.</h1>
+                    <p class="reveal-text delay-1">Optimizing hospital routes using advanced Dijkstra pathfinding
+                        algorithms. Fast, reliable, and life-saving.</p>
+                    <div class="hero-btns reveal-text delay-2">
+                        <a href="app.html" class="cta-btn primary">Start Visualizing <i
+                                class="fas fa-arrow-right"></i></a>
+                        <a href="#features" class="cta-btn secondary">Learn More</a>
+                    </div>
+                </div>
+                <div class="hero-image reveal-image">
+                    <div class="image-wrapper">
+                        <img src="assets/penguin-medic.jpg" alt="Penguin Medic" class="penguin-img">
+                        <div class="image-glow"></div>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- HOSPITALS tab -->
-            <div id="tab-hospitals" class="admin-panel">
-                <div id="hospitalsGrid" class="admin-card-grid">
-                    <div class="empty-hint">No hospitals registered yet. Add hospitals on the visualizer map.</div>
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Engineered for <span>Efficiency</span></h2>
+                    <p>Real-world hospital logistics meet mathematical perfection.</p>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card hospital-scene-card">
+                        <img src="assets/hospital-scene.jpg" alt="Hospital Scene" class="scene-img">
+                        <div class="card-overlay">
+                            <h3>Optimized Care</h3>
+                            <p>Reducing transit time for patients and staff through algorithmic precision.</p>
+                        </div>
+                    </div>
+
+                    <div class="info-content">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-route"></i></div>
+                            <div class="info-text">
+                                <h3>Dijkstra's Implementation</h3>
+                                <p>Our custom-tuned algorithm calculates the shortest path between user nodes and
+                                    hospital hubs in milliseconds.</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-shield-virus"></i></div>
+                            <div class="info-text">
+                                <h3>Reliable Data</h3>
+                                <p>Integrated with secure MongoDB storage to maintain hospital and patient records
+                                    efficiently.</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="info-text">
+                                <h3>Instant Visualization</h3>
+                                <p>Interactive 3D-inspired interface that brings complexity to life with engaging
+                                    visuals.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- REQUESTS tab -->
-            <div id="tab-requests" class="admin-panel">
-                <div id="requestsGrid" class="admin-card-grid">
-                    <div class="empty-hint">No emergency requests yet.</div>
+        <!-- CTA Section -->
+        <section class="final-cta">
+            <div class="container">
+                <div class="cta-card">
+                    <h2>Ready to explore the <span>shortest path</span>?</h2>
+                    <p>Experience the power of MedPath Pro's visualizing engine today.</p>
+                    <a href="app.html" class="cta-btn primary large">Launch Visualizer <i class="fas fa-rocket"></i></a>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <!-- FOOTER: Main interaction toolbar -->
-    <footer>
-        <div class="toolbar">
-            <!-- Left Group: Node and Edge placement toggles -->
-            <div class="left-group">
-                <button id="addUserBtn" class="btn active"><i class="fas fa-user"></i> Add User</button>
-                <button id="addHospitalBtn" class="btn"><i class="fas fa-hospital"></i> Add Hospital</button>
-                <button id="addEdgeBtn" class="btn"><i class="fas fa-plus"></i> Add Edges</button>
-            </div>
-            <!-- Center Group: Source input and core algorithm execution -->
-            <div class="center-group">
-                <div class="input-container">
-                    <label for="sourceNode">Source ID:</label>
-                    <input type="text" id="sourceNode" placeholder="ID">
-                </div>
-                <button id="runBtn" class="btn btn-run">Run Dijkstra</button>
-            </div>
-            <!-- Right Group: Global state management -->
-            <div class="right-group">
-                <button id="demoBtn" class="btn">Demo Data</button>
-                <button id="clearBtn" class="btn btn-outline">Clear</button>
-            </div>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 MedPath Pro. Powered by Dijkstra Algorithm.</p>
         </div>
     </footer>
 
-    <!-- MODAL Layer: Instruction manual -->
-    <div id="instructionsModal" class="modal">
-        <div class="modal-content">
-            <div class="close-modal"><i class="fas fa-xmark"></i></div>
-            <h2>How to Use</h2>
-            <ul>
-                <li><strong>Add Nodes:</strong> Select "Add User" or "Add Hospital" and click on the canvas.</li>
-                <li><strong>Add Edges:</strong> Select "Add Edges", then click the source node and the target node.</li>
-                <li><strong>View Info:</strong> Click any existing node to view its details.</li>
-                <li><strong>Calculate:</strong> Enter a Source Node ID and click "Run Dijkstra".</li>
-            </ul>
-        </div>
-    </div>
+    <script>
+        // --- THEME MANAGEMENT ---
+        const themeToggle = document.getElementById('themeToggle');
+        let isDarkMode = !document.body.classList.contains('light-theme');
 
-    <!-- MODAL Layer: Detailed User editing form -->
-    <div id="editNodeModal" class="modal">
-        <div class="modal-content">
-            <div class="close-modal"><i class="fas fa-xmark"></i></div>
-            <h2>Edit User Details</h2>
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="edit-node-name" placeholder="John Doe">
-            </div>
-            <div class="form-group">
-                <label>Phone Number</label>
-                <input type="text" id="edit-node-phone" placeholder="+1 234 567 890">
-            </div>
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="edit-node-email" placeholder="example@gmail.com">
-            </div>
-            <button id="save-node-btn" class="btn btn-run btn-block">Save Changes</button>
-        </div>
-    </div>
+        function initTheme() {
+            const savedTheme = localStorage.getItem('medpath-theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                isDarkMode = false;
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.body.classList.remove('light-theme');
+                isDarkMode = true;
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
 
-    <!-- MODAL Layer: Detailed Hospital editing form -->
-    <div id="editHospitalModal" class="modal">
-        <div class="modal-content">
-            <div class="close-modal"><i class="fas fa-xmark"></i></div>
-            <h2>Edit Hospital Details</h2>
-            <div class="form-group">
-                <label>Hospital Name</label>
-                <input type="text" id="edit-hosp-name" placeholder="City General">
-            </div>
-            <div class="form-group">
-                <label>Available Beds</label>
-                <input type="number" id="edit-hosp-beds" placeholder="20">
-            </div>
-            <button id="save-hosp-btn" class="btn btn-run btn-block">Save Changes</button>
-        </div>
-    </div>
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            isDarkMode = !document.body.classList.contains('light-theme');
+            themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            localStorage.setItem('medpath-theme', isDarkMode ? 'dark' : 'light');
 
-    <!-- MODAL Layer: Admin Login (email + password) -->
-    <div id="adminLoginModal" class="modal">
-        <div class="modal-content admin-login-content">
-            <div class="close-modal" id="closeAdminLoginModal"><i class="fas fa-xmark"></i></div>
-            <div class="admin-login-header">
-                <div class="admin-lock-icon"><i class="fas fa-shield-halved"></i></div>
-                <h2>Admin Login</h2>
-                <p class="admin-login-subtitle">MedPath Pro Control Panel</p>
-            </div>
-            <div id="admin-login-error" class="admin-error hidden">
-                <i class="fas fa-triangle-exclamation"></i> Invalid credentials. Try again.
-            </div>
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="admin-email-input" placeholder="admin@medpath.pro" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <div class="password-wrapper">
-                    <input type="password" id="admin-password" placeholder="Enter password">
-                    <span class="toggle-pw" id="togglePw"><i class="fas fa-eye"></i></span>
-                </div>
-            </div>
-            <button id="adminLoginBtn" class="btn btn-run btn-block">
-                <i class="fas fa-unlock"></i> Login as Admin
-            </button>
-            <p class="forgot-pw-link">
-                <a href="#" id="forgotPwLink"><i class="fas fa-key"></i> Forgot password?</a>
-            </p>
-        </div>
-    </div>
+            // Update background animation if it exists
+            updateBackgroundTheme();
+        });
 
-    <!-- MODAL Layer: Forgot Password -->
-    <div id="forgotPasswordModal" class="modal">
-        <div class="modal-content admin-login-content">
-            <div class="close-modal" id="closeForgotModal"><i class="fas fa-xmark"></i></div>
-            <div class="admin-login-header">
-                <div class="admin-lock-icon"><i class="fas fa-envelope"></i></div>
-                <h2>Reset Password</h2>
-                <p class="admin-login-subtitle">We'll send a reset link to your email</p>
-            </div>
-            <div id="forgot-success" class="admin-success hidden">
-                <i class="fas fa-circle-check"></i> Reset link sent! Check your inbox.
-            </div>
-            <div id="forgot-error" class="admin-error hidden">
-                <i class="fas fa-triangle-exclamation"></i> <span id="forgotErrorText">Failed to send.</span>
-            </div>
-            <div class="form-group" style="margin:1.75rem 2rem 0;">
-                <label>Admin Email</label>
-                <input type="email" id="forgot-email-input" placeholder="admin@medpath.pro">
-            </div>
-            <button id="sendResetBtn" class="btn btn-run btn-block" style="margin:1rem 2rem;width:calc(100% - 4rem);">
-                <i class="fas fa-paper-plane"></i> Send Reset Link
-            </button>
-            <p class="forgot-pw-link">
-                <a href="#" id="backToLoginLink"><i class="fas fa-arrow-left"></i> Back to Login</a>
-            </p>
-        </div>
-    </div>
+        initTheme();
 
-    <!-- ALERT LAYER: Contains floating toast notifications -->
-    <div id="toast-container"></div>
+        // Simple scroll reveal
+        const reveals = document.querySelectorAll('.reveal-text, .reveal-image');
 
-    <!-- CORE LOGIC: Must be loaded last to ensure all DOM elements exist -->
-    <script src="script.js"></script>
+        window.addEventListener('scroll', () => {
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const revealTop = el.getBoundingClientRect().top;
+                const revealPoint = 150;
+
+                if (revealTop < windowHeight - revealPoint) {
+                    el.classList.add('active');
+                }
+            });
+        });
+
+        // Trigger hero reveal immediately
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                setTimeout(() => {
+                    preloader.classList.add('loaded');
+                    setTimeout(() => {
+                        preloader.remove();
+                    }, 800);
+                }, 1500);
+            }
+
+            document.querySelectorAll('.hero .reveal-text, .hero .reveal-image').forEach(el => {
+                el.classList.add('active');
+            });
+
+            // Initialize Background Animation
+            initLandingAnimation();
+        });
+
+        function initLandingAnimation() {
+            const container = document.getElementById('landing-bg-canvas');
+            if (!container || !window.THREE) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // --- BOKEH CONFIG ---
+            const orbCount = 45;
+            const positions = new Float32Array(orbCount * 3);
+            const velocities = new Float32Array(orbCount * 3);
+            const sizes = new Float32Array(orbCount);
+
+            const geometry = new THREE.BufferGeometry();
+
+            for (let i = 0; i < orbCount; i++) {
+                // Initial positions in a wider spread
+                positions[i * 3] = (Math.random() - 0.5) * 20;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+
+                // Very slow drift velocities
+                velocities[i * 3] = (Math.random() - 0.5) * 0.005;
+                velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.005;
+                velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.005;
+
+                // Varying sizes for bokeh depth
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            // Custom Shader for Soft Glow Circles
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    color: { value: new THREE.Color(isDarkMode ? 0x22d3ee : 0x0891b2) },
+                    opacity: { value: isDarkMode ? 0.35 : 0.25 }
+                },
+                vertexShader: `
+                    attribute float size;
+                    void main() {
+                        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+                        gl_PointSize = size * ( 300.0 / - mvPosition.z );
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color;
+                    uniform float opacity;
+                    void main() {
+                        float dist = length( gl_PointCoord - vec2( 0.5, 0.5 ) );
+                        float alpha = smoothstep(0.5, 0.1, dist);
+                        if ( alpha < 0.01 ) discard;
+                        gl_FragColor = vec4( color, opacity * alpha );
+                    }
+                `,
+                transparent: true,
+                depthWrite: false
+            });
+
+            const orbs = new THREE.Points(geometry, material);
+            scene.add(orbs);
+
+            window.activeParticlesMesh = orbs;
+
+            camera.position.z = 8;
+
+            let mouseX = 0;
+            let mouseY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX - window.innerWidth / 2) / 50;
+                mouseY = (e.clientY - window.innerHeight / 2) / 50;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                const positions = orbs.geometry.attributes.position.array;
+
+                for (let i = 0; i < orbCount; i++) {
+                    // Constant slow drift
+                    positions[i * 3] += velocities[i * 3];
+                    positions[i * 3 + 1] += velocities[i * 3 + 1];
+                    positions[i * 3 + 2] += velocities[i * 3 + 2];
+
+                    // Gentle Mouse Repel Effect (Drift away)
+                    const dx = positions[i * 3] - mouseX;
+                    const dy = positions[i * 3 + 1] - (-mouseY);
+                    const distSq = dx * dx + dy * dy;
+
+                    if (distSq < 16) { // React within 4 units radius
+                        const dist = Math.sqrt(distSq);
+                        const force = (4 - dist) * 0.002;
+                        positions[i * 3] += (dx / dist) * force;
+                        positions[i * 3 + 1] += (dy / dist) * force;
+                    }
+
+                    // Bounds checking (wrap around softly)
+                    if (Math.abs(positions[i * 3]) > 12) positions[i * 3] *= -0.95;
+                    if (Math.abs(positions[i * 3 + 1]) > 9) positions[i * 3 + 1] *= -0.95;
+                }
+
+                orbs.geometry.attributes.position.needsUpdate = true;
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            });
+        }
+
+        function updateBackgroundTheme() {
+            if (window.activeParticlesMesh) {
+                const color = isDarkMode ? 0x22d3ee : 0x0891b2;
+                const opacity = isDarkMode ? 0.35 : 0.25;
+                window.activeParticlesMesh.material.uniforms.color.value.setHex(color);
+                window.activeParticlesMesh.material.uniforms.opacity.value = opacity;
+            }
+        }
+    </script>
 </body>
 
 </html>

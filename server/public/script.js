@@ -1,8 +1,58 @@
 ﻿/**
  * MEDPATH PRO - CORE LOGIC (script.js)
- * Full-stack version: All data persisted to MongoDB via Express API.
- * JWT used for admin authentication.
  */
+
+// Function to update Three.js particles based on theme
+function updateParticleTheme(dark) {
+    if (typeof particlesMesh !== 'undefined' && particlesMesh && particlesMesh.material) {
+        particlesMesh.material.color.setHex(dark ? 0x14b8a6 : 0x0d9488);
+        particlesMesh.material.opacity = dark ? 0.8 : 0.4;
+    }
+}
+
+// --- THEME MANAGEMENT ---
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+let isDarkMode = !document.body.classList.contains('light-theme');
+
+function initTheme() {
+    const savedTheme = localStorage.getItem('medpath-theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        isDarkMode = false;
+        if (themeToggleBtn) themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        document.body.classList.remove('light-theme');
+        isDarkMode = true;
+        if (themeToggleBtn) themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+}
+// --- PRELOADER DISMISSAL ---
+window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        // Minimum delay to appreciate the animation
+        setTimeout(() => {
+            preloader.classList.add('loaded');
+            // Remove from DOM after transition
+            setTimeout(() => {
+                preloader.remove();
+            }, 800);
+        }, 1500);
+    }
+});
+
+initTheme();
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        isDarkMode = !document.body.classList.contains('light-theme');
+        themeToggleBtn.innerHTML = isDarkMode ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        localStorage.setItem('medpath-theme', isDarkMode ? 'dark' : 'light');
+        if (typeof updateParticleTheme === 'function') updateParticleTheme(isDarkMode);
+        drawGraph();
+    });
+}
 
 // ============================================================================
 // 1. API CONFIG & AUTH HELPERS
@@ -28,7 +78,7 @@ async function apiFetch(url, options = {}) {
         if (!res.ok) return [null, data.error || 'Server error'];
         return [data, null];
     } catch (err) {
-        return [null, 'Cannot reach server. Is it running on port 5000?'];
+        return [null, 'Cannot reach server. Is it running on port 5001?'];
     }
 }
 
@@ -162,6 +212,9 @@ async function loadData() {
     }
 
     if (nodes.length > 0) emptyState.style.display = 'none';
+
+    // Ensure canvas is transparent for 3D background
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawGraph();
 }
 
@@ -423,9 +476,8 @@ editPortalHospBtn.onclick = () => {
 
 // Open admin login modal from the header button
 adminHeaderBtn.onclick = () => {
-    // If already logged in, go straight to dashboard
-    if (isAdminLoggedIn) {
-        openAdminDashboard();
+    if (localStorage.getItem('adminToken')) {
+        window.location.href = 'admin.html';
         return;
     }
     adminEmailInput.value = '';
@@ -468,19 +520,14 @@ adminLoginBtn.onclick = async () => {
     }
 
     // Successful login
-    isAdminLoggedIn = true;
     localStorage.setItem('adminToken', data.token);
-    adminEmailTag.innerHTML = `<i class="fas fa-user-shield"></i> ${data.email}`;
     adminLoginError.classList.add('hidden');
     adminLoginModal.style.display = 'none';
-    showToast(`✅ Welcome, Admin!`);
+    showToast(`✅ Welcome, Admin! Redirecting...`);
 
-    if (pendingHospitalIndex !== null) {
-        openHospitalPortal(pendingHospitalIndex);
-        pendingHospitalIndex = null;
-    } else {
-        openAdminDashboard();
-    }
+    setTimeout(() => {
+        window.location.href = 'admin.html';
+    }, 1000);
 };
 
 // Enter key support
@@ -493,7 +540,7 @@ togglePwBtn.onclick = () => {
     togglePwBtn.innerHTML = isText ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
 };
 
-closeAdminLoginModal.onclick = () => adminLoginModal.style.display = 'none';
+
 
 // Forgot password link
 forgotPwLink.onclick = (e) => {
@@ -512,7 +559,7 @@ backToLoginLink.onclick = (e) => {
     adminLoginModal.style.display = 'block';
 };
 
-closeForgotModal.onclick = () => forgotPasswordModal.style.display = 'none';
+
 
 // Send reset link
 sendResetBtn.onclick = async () => {
@@ -544,251 +591,12 @@ sendResetBtn.onclick = async () => {
     }
 };
 
-// Dashboard logout
-adminDashLogoutBtn.onclick = () => {
-    isAdminLoggedIn = false;
-    localStorage.removeItem('adminToken');
-    adminDashboard.classList.add('hidden');
-    showToast('Admin logged out.');
-};
 
-// Back to Map from dashboard
-adminBackBtn.onclick = () => {
-    adminDashboard.classList.add('hidden');
-};
-
-// Backdrop click to close login modals
 window.addEventListener('click', e => {
     if (e.target === adminLoginModal) adminLoginModal.style.display = 'none';
     if (e.target === forgotPasswordModal) forgotPasswordModal.style.display = 'none';
 });
 
-// ============================================================================
-// 7. ADMIN DASHBOARD
-// ============================================================================
-
-async function openAdminDashboard() {
-    // Refresh data from DB
-    await loadData();
-
-    // Stats bar
-    const userCount = nodes.filter(n => n.type === 'user').length;
-    const hospCount = nodes.filter(n => n.type === 'hospital').length;
-    const pendingCount = notifications.filter(n => n.status === 'pending').length;
-    const approvedCount = notifications.filter(n => n.status === 'approved').length;
-
-    document.getElementById('statUserCount').textContent = userCount;
-    document.getElementById('statHospCount').textContent = hospCount;
-    document.getElementById('statPendingCount').textContent = pendingCount;
-    document.getElementById('statApprovedCount').textContent = approvedCount;
-
-    renderAdminUsers();
-    renderAdminHospitals();
-    renderAdminRequests();
-
-    adminDashboard.classList.remove('hidden');
-    setActiveTab('users');
-}
-
-// Tab switching
-document.querySelectorAll('.admin-tab').forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        setActiveTab(btn.dataset.tab);
-    };
-});
-
-function setActiveTab(tab) {
-    document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.add('active');
-}
-
-function renderAdminUsers() {
-    const grid = document.getElementById('usersGrid');
-    const users = nodes.filter(n => n.type === 'user');
-    if (users.length === 0) {
-        grid.innerHTML = '<div class="empty-hint">No users registered yet.</div>';
-        return;
-    }
-    grid.innerHTML = users.map(u => {
-        const approveBtn = u.approved
-            ? `<button class="admin-btn-unapprove" onclick="adminApproveNode('${u._id}', false)">
-                   <i class="fas fa-circle-xmark"></i> Unapprove
-               </button>`
-            : `<button class="admin-btn-approve" onclick="adminApproveNode('${u._id}', true)">
-                   <i class="fas fa-circle-check"></i> Approve
-               </button>`;
-
-        return `
-        <div class="admin-card user-card">
-            <div class="admin-card-icon"><i class="fas fa-user"></i></div>
-            <div class="admin-card-info">
-                <h4>${u.name} <span class="node-id-tag">ID: ${u.id}</span></h4>
-                <p><i class="fas fa-phone"></i> ${u.phone || 'N/A'}</p>
-                <p><i class="fas fa-envelope"></i> ${u.email || 'N/A'}</p>
-                <p><i class="fas fa-map-marker-alt"></i> x:${Math.round(u.x)}, y:${Math.round(u.y)}</p>
-                <div class="status-badge ${u.approved ? 'status-approved' : 'status-pending'}">
-                    ${u.approved ? 'Approved' : 'Pending'}
-                </div>
-            </div>
-            <div class="admin-card-actions">
-                ${approveBtn}
-                <button class="admin-btn-edit" onclick="adminEditNode(${nodes.indexOf(u)})">
-                    <i class="fas fa-pen-to-square"></i> Edit
-                </button>
-                <button class="admin-btn-delete" onclick="adminDeleteNode('${u._id}')">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
-        </div>
-    `;
-    }).join('');
-}
-
-function renderAdminHospitals() {
-    const grid = document.getElementById('hospitalsGrid');
-    const hospitals = nodes.filter(n => n.type === 'hospital');
-    if (hospitals.length === 0) {
-        grid.innerHTML = '<div class="empty-hint">No hospitals registered yet.</div>';
-        return;
-    }
-    grid.innerHTML = hospitals.map(h => {
-        const pending = notifications.filter(n => n.targetNodeIndex === h.id && n.status === 'pending');
-        return `
-        <div class="admin-card hospital-card">
-            <div class="admin-card-icon hosp-icon"><i class="fas fa-hospital"></i></div>
-            <div class="admin-card-info">
-                <h4>${h.name} <span class="node-id-tag">ID: ${h.id}</span></h4>
-                <p><i class="fas fa-bed"></i> Available Beds: <strong>${h.availableBeds}</strong></p>
-                <p><i class="fas fa-clock"></i> Pending Requests: <strong>${pending.length}</strong></p>
-                <p><i class="fas fa-map-marker-alt"></i> x:${Math.round(h.x)}, y:${Math.round(h.y)}</p>
-            </div>
-            <div class="admin-card-actions">
-                <button class="admin-btn-approve" onclick="adminApproveAllPending('${h.id}')">
-                    <i class="fas fa-circle-check"></i> Approve All
-                </button>
-                <button class="admin-btn-edit" onclick="adminEditNode(${nodes.indexOf(h)})">
-                    <i class="fas fa-pen-to-square"></i> Edit
-                </button>
-                <button class="admin-btn-delete" onclick="adminDeleteNode('${h._id}')">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
-        </div>`;
-    }).join('');
-}
-
-function renderAdminRequests() {
-    const grid = document.getElementById('requestsGrid');
-    if (notifications.length === 0) {
-        grid.innerHTML = '<div class="empty-hint">No emergency requests yet.</div>';
-        return;
-    }
-    grid.innerHTML = [...notifications].reverse().map(n => {
-        const fromNode = nodes.find(nd => nd.id === n.sourceNodeIndex);
-        const toNode = nodes.find(nd => nd.id === n.targetNodeIndex);
-        const badgeClass = n.status === 'approved' ? 'status-approved'
-            : n.status === 'rejected' ? 'status-rejected' : 'status-pending';
-        const actions = n.status === 'pending' ? `
-            <button class="admin-btn-approve" onclick="adminApproveReq('${n._id}')">
-                <i class="fas fa-circle-check"></i> Approve
-            </button>
-            <button class="admin-btn-delete" onclick="adminRejectReq('${n._id}')">
-                <i class="fas fa-circle-xmark"></i> Reject
-            </button>` : '';
-
-        return `
-        <div class="admin-card request-card">
-            <div class="admin-card-icon req-icon"><i class="fas fa-bell"></i></div>
-            <div class="admin-card-info">
-                <h4>
-                    ${fromNode ? fromNode.name : `User #${n.sourceNodeIndex}`}
-                    → ${toNode ? toNode.name : `Hospital #${n.targetNodeIndex}`}
-                    <span class="status-badge ${badgeClass}">${n.status}</span>
-                </h4>
-                <p><i class="fas fa-route"></i> Distance: <strong>${n.distance}</strong></p>
-                <p><i class="fas fa-map-signs"></i> ${n.path}</p>
-            </div>
-            <div class="admin-card-actions">${actions}</div>
-        </div>`;
-    }).join('');
-}
-
-// Admin: delete a node (with cascading in backend)
-async function adminDeleteNode(mongoId) {
-    if (!confirm('Delete this node? All related edges and notifications will also be removed.')) return;
-
-    const [, err] = await apiFetch(`${API}/nodes/${mongoId}`, { method: 'DELETE' });
-    if (err) return showToast(err, 'error');
-
-    showToast('Node deleted successfully.');
-    shortestPaths = null;
-    pathsList.innerHTML = '<div class="empty-hint">Paths will appear here after calculation</div>';
-    await openAdminDashboard(); // Refresh dashboard + reload data + redraw canvas
-}
-
-// Admin: approve all pending requests for a hospital
-async function adminApproveAllPending(hospitalNodeId) {
-    const pending = notifications.filter(n => n.targetNodeIndex === parseInt(hospitalNodeId) && n.status === 'pending');
-    if (pending.length === 0) return showToast('No pending requests.', 'error');
-
-    for (const notif of pending) {
-        await apiFetch(`${API}/notifications/${notif._id}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ status: 'approved' })
-        });
-        notif.status = 'approved';
-    }
-
-    await loadData();
-    openAdminDashboard();
-    showToast(`✅ Approved ${pending.length} request(s).`);
-}
-
-// Admin: approve a single request from requests tab
-async function adminApproveReq(notifId) {
-    const [, err] = await apiFetch(`${API}/notifications/${notifId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: 'approved' })
-    });
-    if (err) return showToast(err, 'error');
-    const n = notifications.find(x => x._id === notifId);
-    if (n) n.status = 'approved';
-    await loadData();
-    openAdminDashboard();
-    showToast('✅ Request approved!');
-}
-
-// Admin: reject a single request from requests tab
-async function adminRejectReq(notifId) {
-    const [, err] = await apiFetch(`${API}/notifications/${notifId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: 'rejected' })
-    });
-    if (err) return showToast(err, 'error');
-    const n = notifications.find(x => x._id === notifId);
-    if (n) n.status = 'rejected';
-    renderAdminRequests();
-    showToast('Request rejected.', 'error');
-}
-
-// Admin: approve/unapprove a node
-async function adminApproveNode(mongoId, approved) {
-    const [data, err] = await apiFetch(`${API}/nodes/${mongoId}/approve`, {
-        method: 'PATCH',
-        body: JSON.stringify({ approved })
-    });
-    if (err) return showToast(err, 'error');
-
-    showToast(`Node ${approved ? 'approved' : 'unapproved'}!`);
-    await openAdminDashboard();
-}
-
-// Admin: open edit modal from dashboard
-function adminEditNode(index) {
-    openEditModal(index);
-}
 
 // ============================================================================
 // 8. EDIT MODALS
@@ -905,26 +713,29 @@ function runDijkstra(source) {
 function drawGraph() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Default edges
+    // Dynamic edge styling
     edges.forEach(edge => {
         const from = nodes.find(n => n.id === edge.from);
         const to = nodes.find(n => n.id === edge.to);
         if (!from || !to) return;
+
         ctx.beginPath();
         ctx.moveTo(from.x, from.y);
         ctx.lineTo(to.x, to.y);
-        ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(15, 23, 42, 0.1)';
+        ctx.lineWidth = 2;
         ctx.stroke();
-        ctx.font = 'bold 12px Inter';
-        ctx.fillStyle = '#475569';
+
+        // Edge Weight
+        ctx.font = '600 12px Inter';
+        ctx.fillStyle = isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(15, 23, 42, 0.5)';
         ctx.textAlign = 'center';
         ctx.fillText(edge.weight, (from.x + to.x) / 2, (from.y + to.y) / 2 - 5);
     });
 
-    // Shortest paths highlight
+    // Shortest paths highlight (Solid Cyan)
     if (shortestPaths) {
-        ctx.strokeStyle = '#06b6d4';
+        ctx.strokeStyle = '#2dd4bf';
         ctx.lineWidth = 4;
         for (let i = 0; i < nodes.length; i++) {
             let curr = i;
@@ -939,7 +750,7 @@ function drawGraph() {
         }
     }
 
-    // Approved animated paths
+    // Approved animated paths (Vibrant Teal)
     notifications.forEach(notif => {
         if (notif.status !== 'approved') return;
         const sourceIdx = nodes.findIndex(n => n.id === notif.sourceNodeIndex);
@@ -947,13 +758,11 @@ function drawGraph() {
         if (sourceIdx === -1 || targetIdx === -1) return;
         const result = runDijkstra(sourceIdx);
 
-        ctx.shadowColor = 'rgba(20, 184, 166, 0.4)';
-        ctx.shadowBlur = 15;
         ctx.strokeStyle = '#14b8a6';
-        ctx.lineWidth = 6;
-        const dashOffset = (Date.now() / 40) % 30;
-        ctx.setLineDash([15, 15]);
-        ctx.lineDashOffset = dashOffset;
+        ctx.lineWidth = 5;
+        const dashOffset = (Date.now() / 30) % 40;
+        ctx.setLineDash([20, 15]);
+        ctx.lineDashOffset = -dashOffset;
 
         let curr = targetIdx;
         while (result.prev[curr] !== -1) {
@@ -965,57 +774,65 @@ function drawGraph() {
             curr = p;
         }
 
-        ctx.shadowBlur = 0;
-        ctx.setLineDash([]);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-        curr = targetIdx;
-        while (result.prev[curr] !== -1) {
-            const p = result.prev[curr];
-            ctx.beginPath();
-            ctx.moveTo(nodes[curr].x, nodes[curr].y);
-            ctx.lineTo(nodes[p].x, nodes[p].y);
-            ctx.stroke();
-            curr = p;
-        }
         ctx.setLineDash([]);
     });
 
-    // Nodes
+    // Nodes (Premium Gradients)
     nodes.forEach((node, index) => {
-        ctx.shadowColor = 'rgba(0,0,0,0.08)';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetY = 4;
+        const isSelected = index === selectedNodeIndex;
+
+        // Outer Glow
+        ctx.shadowColor = node.type === 'hospital' ? 'rgba(255, 62, 62, 0.4)' : 'rgba(16, 185, 129, 0.4)';
+        ctx.shadowBlur = isSelected ? 25 : 15;
+
+        // Node Body
+        const gradient = ctx.createRadialGradient(node.x - 5, node.y - 5, 5, node.x, node.y, 22);
+        if (isSelected) {
+            gradient.addColorStop(0, '#5eead4');
+            gradient.addColorStop(1, '#14b8a6');
+        } else if (node.type === 'hospital') {
+            gradient.addColorStop(0, '#ff6b6b');
+            gradient.addColorStop(1, '#ff3e3e');
+        } else {
+            gradient.addColorStop(0, '#34d399');
+            gradient.addColorStop(1, '#10b981');
+        }
+
         ctx.beginPath();
         ctx.arc(node.x, node.y, 22, 0, Math.PI * 2);
-
-        if (index === selectedNodeIndex) {
-            ctx.fillStyle = '#2dd4bf';
-        } else {
-            ctx.fillStyle = (node.type === 'hospital' ? '#ff4d4d' : '#14b8a6');
-        }
+        ctx.fillStyle = gradient;
         ctx.fill();
 
+        // Inner Border
         ctx.shadowBlur = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 2;
         ctx.stroke();
 
+        // Icon
         ctx.fillStyle = 'white';
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 4;
         ctx.font = '900 16px "Font Awesome 6 Free"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(node.type === 'hospital' ? '\uf0f8' : '\uf007', node.x, node.y);
 
-        ctx.font = 'bold 10px Inter';
-        ctx.fillStyle = '#1e293b';
+        // Label
+        ctx.shadowBlur = 0;
+        ctx.font = 'bold 12px Inter';
+        ctx.fillStyle = isDarkMode ? '#ffffff' : '#1e293b';
         ctx.textBaseline = 'top';
-        ctx.fillText(`${node.name} (ID: ${node.id})`, node.x, node.y + 30);
+        ctx.fillText(node.name, node.x, node.y + 32);
+
+        ctx.font = '500 10px Inter';
+        ctx.fillStyle = isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(15, 23, 42, 0.6)';
+        ctx.fillText(`ID: ${node.id}`, node.x, node.y + 48);
 
         if (node.type === 'hospital') {
-            ctx.font = '8px Inter';
-            ctx.fillText(`Beds: ${node.availableBeds}`, node.x, node.y + 42);
+            ctx.fillStyle = isDarkMode ? '#ff8080' : '#dc2626';
+            ctx.font = 'bold 10px Inter';
+            ctx.fillText(`Beds: ${node.availableBeds}`, node.x, node.y + 62);
         }
     });
 }
@@ -1227,9 +1044,15 @@ infoIcon.onclick = () => modal.style.display = 'block';
 
 document.querySelectorAll('.close-modal').forEach(btn => {
     btn.onclick = () => {
+        const parentModal = btn.closest('.modal');
+        if (parentModal) parentModal.style.display = 'none';
+
+        // Also ensure individual variables are handled if they don't use .modal class properly
         modal.style.display = 'none';
         editNodeModal.style.display = 'none';
         editHospitalModal.style.display = 'none';
+        adminLoginModal.style.display = 'none';
+        forgotPasswordModal.style.display = 'none';
     };
 });
 
@@ -1261,5 +1084,83 @@ window.onload = async () => {
         }
         // Load all data from MongoDB
         await loadData();
+        init3DBackground();
     }, 50);
 };
+
+// Global reference for theme updates
+let particlesMesh;
+
+// ============================================================================
+// 16. THREE.JS 3D BACKGROUND
+// ============================================================================
+
+function init3DBackground() {
+    const container = document.getElementById('bg-canvas-container');
+    if (!container || !window.THREE) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+
+    // Particles
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 200;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for (let i = 0; i < particlesCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 10;
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+        size: 0.02,
+        color: !document.body.classList.contains('light-theme') ? 0x14b8a6 : 0x0d9488,
+        transparent: true,
+        opacity: !document.body.classList.contains('light-theme') ? 0.8 : 0.4,
+        blending: THREE.AdditiveBlending
+    });
+
+    particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    // Neural Network Lines (Simplistic for performance)
+    const linesMaterial = new THREE.LineBasicMaterial({ color: 0x14b8a6, transparent: true, opacity: 0.1 });
+    const linesGeometry = new THREE.BufferGeometry();
+    scene.add(new THREE.LineSegments(linesGeometry, linesMaterial));
+
+    camera.position.z = 3;
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        particlesMesh.rotation.y += 0.001;
+        particlesMesh.rotation.x += 0.0005;
+
+        // Mouse follow effect
+        particlesMesh.position.x += (mouseX - particlesMesh.position.x) * 0.05;
+        particlesMesh.position.y += (-mouseY - particlesMesh.position.y) * 0.05;
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    });
+}

@@ -41,44 +41,94 @@ MedPath Pro is a high-performance, interactive hospital shortest path visualizer
 - **Node.js**: Version 18.0.0 or higher.
 - **MongoDB**: A running MongoDB instance (local or Atlas).
 
-### Installation
+---
 
-1. Clone the repository:
+## 🚀 Key Features
 
-   ```bash
-   git clone https://github.com/ajaygangwar945/MedPath-Pro.git
-   cd MedPath-Pro
-   ```
+### 🗺️ Visualizer Map
 
-2. Install dependencies:
+- **Interactive Graph creation**: Add patients (User nodes) and hospitals with simple clicks.
+- **Dynamic Edge Weighting**: Distances are automatically calculated using Euclidean geometry.
+- **Dijkstra Real-time Calculation**: Instant pathfinding from any source node to all reachable hospitals.
 
-   ```bash
-   cd server
-   npm install
-   ```
+### 🔐 Admin Dashboard (Mission Control)
 
-3. Configure environment variables:
-   Create a `.env` file in the `server/` directory with:
+- **Role-Based Access**: Secure login with JWT authentication.
+- **Node Management**: Approve/Unapprove patients and edit hospital resources (beds) directly.
+- **Global Stats**: Track total users, hospitals, and pending emergency requests in real-time.
+- **One-Click Navigation**: Seamlessly toggle between "Mission Control" and "Tactical Map".
 
-   ```env
-   MONGO_URI=your_mongodb_uri
-   JWT_SECRET=your_jwt_secret
-   PORT=5000
-   ```
+### 🚑 Emergency System
 
-4. Run the application:
+- **Real-Time Notifications**: Patients can notify hospitals of emergencies.
+- **Path Animation**: Approved paths are visually animated with flowing dashed lines on the canvas.
+- **Resource Tracking**: Bed counts decrease automatically upon request approval.
 
-   ```bash
-   # From the root directory
-   npm start
-   ```
+---
+
+## 🛠️ Technical Stack
+
+- **Frontend**: Vanilla JS (ES6+), HTML5 Canvas, CSS3 (Glassmorphism)
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB Atlas (Mongoose)
+- **Auth**: JWT (JSON Web Tokens) & Bcryptjs
+- **Icons & Fonts**: Font Awesome 6, Inter (Google Fonts)
+
+---
 
 ## 📂 Project Structure
 
-- 📂 `server/`: Backend Node.js/Express server logic and models.
-  - 📂 `public/`: Frontend static files (the core visualizer).
-- 📄 `index.html`: (Legacy/Development) Shortcut to frontend.
-- 📄 `render.yaml`: Configuration for Render deployment.
+```bash
+├── server/             # Express.js Backend
+│   ├── models/        # Mongoose Schemas (Admin, Node, Edge, Notification)
+│   ├── routes/        # API Endpoints (Auth, Nodes, Edges, Notifications)
+│   ├── public/        # Main Frontend (Served by Express)
+│   └── index.js       # Server Entry & Auto-Seeding Logic
+├── MedPath_Pro_Analysis.txt # Detailed DSA Technical Analysis
+└── render.yaml        # Render Deployment Configuration
+```
+
+---
+
+## 🏁 Quick Start
+
+1. **Install Dependencies**:
+
+   ```bash
+   npm install --prefix server
+   ```
+
+2. **Setup Environment**:
+   Create a `.env` file in the `server/` directory:
+
+   ```env
+   MONGO_URI=your_mongodb_uri
+   JWT_SECRET=your_secret_key
+   ADMIN_EMAIL=admin@medpath.pro
+   ADMIN_PASSWORD=your_password
+   EMAIL_USER=your_gmail@gmail.com
+   EMAIL_PASS=your_gmail_app_password
+   ```
+
+3. **Run Locally**:
+
+   ```bash
+   npm run dev
+   ```
+
+   *Access at <http://localhost:5000>*
+
+---
+
+## 🧠 DSA Analysis
+
+For a deep dive into the algorithms and data structures (Graphs, Dijkstra, euclidean distance) used in this project, refer to the [MedPath_Pro_Analysis.txt](./MedPath_Pro_Analysis.txt) file.
+
+---
+
+<div align="center">
+  Developed by <b>Ajay Gangwar</b>
+</div>
 
 ## ☁️ Deployment
 

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedPath Pro | Admin Dashboard</title>
+
+    <!-- Dynamic SVG Icon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='%2314b8a6' stroke-width='8'/><rect x='45' y='25' width='10' height='50' fill='%2314b8a6' rx='2'/><rect x='25' y='45' width='50' height='10' fill='%2314b8a6' rx='2'/></svg>">
+
+    <!-- External Assets -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="admin-page">
+    <div class="admin-bg-atmospheric"></div>
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="preloader-content">
+            <svg class="med-logo loader-logo" viewBox="0 0 100 100" width="80" height="80">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="8" />
+                <rect x="45" y="25" width="10" height="50" fill="currentColor" rx="2" />
+                <rect x="25" y="45" width="50" height="10" fill="currentColor" rx="2" />
+                <circle cx="50" cy="50" r="5" fill="white" />
+            </svg>
+            <div class="loader-track">
+                <div class="loader-fill"></div>
+            </div>
+            <p class="loader-text">Securing Admin Session...</p>
+        </div>
+    </div>
+
+    <div id="admin-dashboard">
+        <div class="admin-dash-header">
+            <div class="admin-dash-logo">
+                <i class="fas fa-shield-halved"></i>
+                <div>
+                    <h2>Admin Dashboard</h2>
+                    <span>MedPath Pro Control Panel</span>
+                </div>
+            </div>
+            <div class="admin-dash-actions">
+                <button id="themeToggleBtn" class="btn-icon" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="app.html" class="btn btn-outline admin-nav-link">
+                    <i class="fas fa-arrow-left"></i> Back to Map
+                </a>
+                <span class="admin-email-tag" id="adminEmailTag"><i class="fas fa-user-shield"></i>
+                    admin@medpath.pro</span>
+                <button id="adminDashLogoutBtn" class="btn btn-logout">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats bar -->
+        <div class="admin-stats-bar">
+            <div class="admin-stat">
+                <i class="fas fa-users"></i>
+                <div><span id="statUserCount">0</span><label>Total Users</label></div>
+            </div>
+            <div class="admin-stat">
+                <i class="fas fa-hospital"></i>
+                <div><span id="statHospCount">0</span><label>Hospitals</label></div>
+            </div>
+            <div class="admin-stat">
+                <i class="fas fa-clock"></i>
+                <div><span id="statPendingCount">0</span><label>Pending Requests</label></div>
+            </div>
+            <div class="admin-stat">
+                <i class="fas fa-circle-check"></i>
+                <div><span id="statApprovedCount">0</span><label>Approved</label></div>
+            </div>
+        </div>
+
+        <!-- Tab switcher -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="users">
+                <i class="fas fa-users"></i> Users
+            </button>
+            <button class="admin-tab" data-tab="hospitals">
+                <i class="fas fa-hospital"></i> Hospitals
+            </button>
+            <button class="admin-tab" data-tab="requests">
+                <i class="fas fa-bell"></i> Requests
+            </button>
+        </div>
+
+        <!-- Tab content panels -->
+        <div class="admin-tab-content">
+            <!-- USERS tab -->
+            <div id="tab-users" class="admin-panel active">
+                <div id="usersGrid" class="admin-card-grid">
+                    <div class="empty-hint">Loading users...</div>
+                </div>
+            </div>
+
+            <!-- HOSPITALS tab -->
+            <div id="tab-hospitals" class="admin-panel">
+                <div id="hospitalsGrid" class="admin-card-grid">
+                    <div class="empty-hint">Loading hospitals...</div>
+                </div>
+            </div>
+
+            <!-- REQUESTS tab -->
+            <div id="tab-requests" class="admin-panel">
+                <div id="requestsGrid" class="admin-card-grid">
+                    <div class="empty-hint">Loading requests...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detail-modal" class="modal">
+        <div class="modal-content detail-modal-content split-layout">
+            <span class="close-modal" id="closeDetailModal">&times;</span>
+
+            <!-- MASTER PANE 1: VISUAL IDENTITY & CARD -->
+            <div class="detail-visual-pane">
+                <div class="profile-hub">
+                    <div id="detail-icon" class="master-profile-icon"></div>
+                    <h2 id="detail-name">User Name</h2>
+                    <p id="detail-type-tag" class="detail-type-tag">User Account</p>
+                </div>
+
+                <div class="med-identity-card">
+                    <div class="card-chip"></div>
+                    <div class="card-logo">
+                        <i class="fas fa-plus-square"></i> MEDPATH
+                    </div>
+                    <div class="card-number" id="card-id-val">---- ---- ---- ---</div>
+                    <div class="card-holder">
+                        <label>AUTHORIZED HOLDER</label>
+                        <div id="card-name-val">--- --- ---</div>
+                    </div>
+                    <div class="card-type">
+                        <label>ACCESS LEVEL</label>
+                        <div id="card-type-val">VERIFIED PROVIDER</div>
+                    </div>
+                    <div class="card-glow"></div>
+                </div>
+            </div>
+
+            <!-- MASTER PANE 2: COMPREHENSIVE DATA -->
+            <div class="detail-info-pane">
+                <div class="modal-watermark"></div>
+                <div class="detail-body">
+                    <div class="detail-section-title">Verification Dossier</div>
+
+                    <div class="detail-info-row">
+                        <label>Unique ID</label>
+                        <span id="detail-id"></span>
+                    </div>
+                    <div class="detail-info-row">
+                        <label>Blood Group</label>
+                        <span id="detail-blood-group"></span>
+                    </div>
+                    <div class="detail-info-row">
+                        <label>Phone Number</label>
+                        <span id="detail-phone"></span>
+                    </div>
+                    <div class="detail-info-row">
+                        <label>Email Address</label>
+                        <span id="detail-email"></span>
+                    </div>
+                    <div class="detail-info-row full-width">
+                        <label>Verification Status</label>
+                        <div id="detail-status" class="status-badge"></div>
+                    </div>
+                    <div class="detail-info-row full-width">
+                        <label>Primary Location Address</label>
+                        <span id="detail-address"></span>
+                    </div>
+                </div>
+
+                <div class="detail-actions" id="detail-modal-actions">
+                    <!-- Dynamic actions -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERT LAYER -->
+    <div id="toast-container"></div>
+
+    <!-- LOGIC -->
+    <script src="admin.js"></script>
+</body>
+
+</html>

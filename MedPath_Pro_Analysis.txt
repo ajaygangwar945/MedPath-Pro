@@ -33,54 +33,51 @@
   1. PROJECT OVERVIEW
 ================================================================================
 
-MedPath Pro is a browser-based, interactive hospital shortest-path visualizer
+MedPath Pro is a premium, full-stack hospital shortest-path visualizer
 that demonstrates Dijkstra's algorithm in a real-world medical scenario.
 
 CORE FUNCTIONALITY:
-  - Users build a graph by placing "User" nodes (patients) and "Hospital" nodes
-    on a canvas using mouse clicks.
-  - Connections (edges) between nodes are created interactively, with weights
-    automatically calculated from Euclidean pixel distances.
-  - Running Dijkstra's algorithm from any source node finds the shortest path
-    to every reachable hospital.
-  - Patients can "Notify Hospital" to send an emergency request.
-  - A hospital admin (secured by login) can Approve or Reject those requests.
-  - Approved paths are visually animated with a flowing dashed line on canvas.
-  - Bed count decreases automatically when a request is approved.
+  - Interactive Map: Build a graph with "User" (patient) and "Hospital" nodes.
+  - Automatic Weighting: Edges use Euclidean pixel distance for weights.
+  - Pathfinding: Real-time Dijkstra's algorithm execution.
+  - Emergency Workflow: Patients notify hospitals; paths are animated upon approval.
+  - Admin Dashboard: Secure "Mission Control" for node approval, resource editing,
+    and global statistics tracking.
+  - Auto-Seeding: Effortless deployment with automatic admin account creation.
 
 TECHNOLOGY STACK:
-  - Frontend: Plain HTML5, CSS3, Vanilla JavaScript (no frameworks)
-  - Rendering: HTML5 Canvas API (2D context)
-  - Icons: Font Awesome 6 CDN
-  - Fonts: Google Fonts (Inter)
+  - Frontend: Vanilla JavaScript (ES6+), HTML5 Canvas, CSS3 (Glassmorphism).
+  - Backend: Node.js, Express.js.
+  - Database: MongoDB Atlas (Mongoose).
+  - Security: JWT Authentication and Bcrypt password hashing.
 
 
 ================================================================================
   2. PROJECT ARCHITECTURE & FILE SUMMARY
 ================================================================================
 
-FILE: index.html
-  - Defines the entire DOM structure (header, canvas, sidebar, portal, modals).
-  - Contains 7 modals: Instructions, Edit User, Edit Hospital, Admin Login.
-  - The <canvas id="graph-canvas"> is the primary rendering surface.
-  - All dynamic content is injected by script.js via innerHTML / appendChild.
-  - Loads script.js at the bottom of <body> to ensure DOM is ready.
+The project follows a modern full-stack directory structure:
 
-FILE: script.js  (872 lines — main logic file)
-  SECTION 1 (Lines 1–78)   : State variables and DOM references.
-  SECTION 2 (Lines 79–185) : Canvas mouse interaction and node placement.
-  SECTION 3 (Lines 186–304): Hospital portal notifications (approve/reject).
-  SECTION 4 (Lines 442–491): Dijkstra's algorithm implementation.
-  SECTION 5 (Lines 493–655): Canvas rendering engine (drawGraph, animation).
-  SECTION 6 (Lines 656–743): Results display and notifications.
-  SECTION 7 (Lines 744–872): Button modes, demo data, modal controls.
+ROOT DIRECTORY:
+  - MedPath_Pro_Analysis.txt : This technical analysis document.
+  - README.md                : Project overview, setup, and deployment guide.
+  - render.yaml             : Infrastructure as Code for Render deployment.
+  - package.json            : Global scripts for starting the dev environment.
 
-FILE: style.css  (893 lines — styling only, no DSA)
-  - Provides glassmorphism card styles, modal overlays, button states,
-    notification section headers (Pending/Approved/Rejected), toast animations,
-    admin login modal, badge, and logout button.
-  - No algorithmic logic; purely presentational.
-
+SERVER DIRECTORY (/server):
+  - index.js                : The brain of the backend. Handles Express setup,
+                              MongoDB connection, and Auto-Seeding logic.
+  - seed.js                 : Manual database initialization script.
+  - public/                 : The web root. Contains optimized frontend assets:
+      - index.html          : Main app structure with 7 interactive modals.
+      - script.js (1200+ l) : Core logic (Canvas, Dijkstra, Admin API calls).
+      - style.css           : Glassmorphism and responsive UI styling.
+  - routes/                 : RESTful API endpoints:
+      - auth.js             : Login, JWT signing, and Password Reset.
+      - nodes.js            : Persistent node management (CRUD + Approval).
+      - edges.js            : Graph edge persistence.
+      - notifications.js    : Emergency request lifecycle management.
+  - models/                 : Mongoose / MongoDB schemas.
 
 ================================================================================
   3. DSA TOPIC 1 : GRAPH (Edge List Representation)
@@ -599,6 +596,11 @@ WHERE USED — displayResults() and sendNotification() (Lines 670–677, 738):
   renderPortalNotifications()      | script.js:191-254| Filtering, State Mgmt
   approveNotification(idx)         | script.js:259-287| Graph Update, Dijkstra
   rejectNotification(idx)          | script.js:292-304| State Management
+  adminApproveNode(id, approved)   | script.js:630-638| Graph/Persistence Update
+  adminEditNode(index)             | script.js:645-647| State Management (UI)
+  seedAdmin()                      | server/index.js  | Data Persistence / Initialization
+  authHeaders()                    | script.js:14-18  | Security / State Management
+  renderAdminUsers/Hospitals()     | script.js:590-625| Array Mapping / UI Rendering
   Edge creation guard              | script.js:113-116| Duplicate Detection
   updateBtnStates()                | script.js:757-762| Boolean State
   demoBtn data (nodes/edges)       | script.js:777-804| Graph (Edge List)
