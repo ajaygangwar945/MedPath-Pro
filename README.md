@@ -1,78 +1,68 @@
-# 🏥 MedPath Pro
+<img align="center" src="./banner.png" width="100%" height="200" style="object-fit: cover">
 
-<p align="left">
+<h1 align="center">🏥 MedPath Pro</h1>
+
+<p align="center">
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
   <img src="https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white" alt="Three.js" />
-  <img src="https://img.shields.io/badge/Font_Awesome-339AF0?style=for-the-badge&logo=font-awesome&logoColor=white" alt="Font Awesome" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js" />
+  <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
 </p>
 
-## 🌐 Live Demo
-
-**Check out the live application here: [MedPath Pro Live](https://ajaygangwar945.github.io/MedPath-Pro/)**
+## Overview
 
 MedPath Pro is a high-performance, interactive hospital shortest path visualizer. Designed with an elegant medical-themed UI and powered by Dijkstra's algorithm, it helps visualize the most efficient routes between patients and medical facilities in real-time.
 
-## 🌟 Key Features
+---
 
-- 🖱️ **Interactive Graph Canvas**: Easily add Users (Patients), Hospitals, and weighted edges by clicking on the workspace.
-- ⚡ **Real-time Pathfinding**: Implements Dijkstra's algorithm to calculate the shortest path from any source node to all other reachable nodes.
-- 🏥 **Hospital Management Portal**: Dedicated dashboards for hospitals to manage bed availability and handle incoming emergency notifications.
-- 🌐 **Dynamic 3D Environment**: Features an immersive 3D background built with Three.js, simulating a neural/medical network.
-- 🔔 **Emergency Notifications**: Integrated alerting system where patients can notify hospitals, and hospitals can approve requests.
-- 📊 **Demo Data**: One-click demo initialization to populate the map with complex scenarios.
+## 🚀 View Live Site
 
-## 🛠️ Tech Stack
+The project is live and accessible online.
 
-- **Structure**: Semantic HTML5
-- **Styling**: Vanilla CSS3 (Custom Properties, Glassmorphism)
-- **Logic**: ES6+ JavaScript
-- **Graphics**:
-  - **2D**: Canvas API (Graph rendering)
-  - **3D**: Three.js (Animated background)
-- **Icons**: Font Awesome 6
-- **Typography**: Inter (Google Fonts)
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js**: Version 18.0.0 or higher.
-- **MongoDB**: A running MongoDB instance (local or Atlas).
+[![Live Website](https://img.shields.io/badge/Live_Website-2EA44F?style=for-the-badge&logo=vercel&logoColor=white)](https://medpath-pro.onrender.com/)
 
 ---
 
-## 🚀 Key Features
+## 🌟 Key Features
 
 ### 🗺️ Visualizer Map
 
-- **Interactive Graph creation**: Add patients (User nodes) and hospitals with simple clicks.
-- **Dynamic Edge Weighting**: Distances are automatically calculated using Euclidean geometry.
-- **Dijkstra Real-time Calculation**: Instant pathfinding from any source node to all reachable hospitals.
-
-### 🔐 Admin Dashboard (Mission Control)
-
-- **Role-Based Access**: Secure login with JWT authentication.
-- **Node Management**: Approve/Unapprove patients and edit hospital resources (beds) directly.
-- **Global Stats**: Track total users, hospitals, and pending emergency requests in real-time.
-- **One-Click Navigation**: Seamlessly toggle between "Mission Control" and "Tactical Map".
+- 🖱️ **Interactive Graph Creation**: Easily add Users (Patients), Hospitals, and weighted edges by clicking on the workspace.
+- 📐 **Dynamic Edge Weighting**: Distances are automatically calculated using Euclidean geometry.
+- ⚡ **Real-time Pathfinding**: Implements Dijkstra's algorithm to calculate the shortest path from any source node to all other reachable nodes.
+- 📊 **Demo Data**: One-click demo initialization to populate the map with complex scenarios.
 
 ### 🚑 Emergency System
 
-- **Real-Time Notifications**: Patients can notify hospitals of emergencies.
-- **Path Animation**: Approved paths are visually animated with flowing dashed lines on the canvas.
-- **Resource Tracking**: Bed counts decrease automatically upon request approval.
+- 🔔 **Emergency Notifications**: Integrated alerting system where patients can notify hospitals, and hospitals can approve requests.
+- 🌊 **Path Animation**: Approved paths are visually animated with flowing dashed lines on the canvas.
+- 🛏️ **Resource Tracking**: Bed counts decrease automatically upon request approval.
+
+### 🔐 Admin Dashboard & Hospital Portal
+
+- 🏥 **Hospital Management**: Dedicated dashboards for hospitals to manage bed availability and incoming emergency notifications.
+- 🛡️ **Role-Based Access**: Secure login with JWT authentication.
+- ⚙️ **Node Management**: Approve/Unapprove patients and edit hospital resources directly.
+- 📈 **Global Stats**: Track total users, hospitals, and pending emergency requests in real-time.
+
+### 🌌 Immersive UI
+
+- 🌐 **Dynamic 3D Environment**: Features an immersive 3D background built with Three.js, simulating a neural/medical network.
+- 🔀 **Simulated Mission Control**: Seamlessly toggle between "Mission Control" and "Tactical Map".
 
 ---
 
-## 🛠️ Technical Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: Vanilla JS (ES6+), HTML5 Canvas, CSS3 (Glassmorphism)
+- **Frontend**: HTML5, Vanilla CSS3 (Custom Properties, Glassmorphism), ES6+ JavaScript
+- **Graphics Graphics**: Canvas API (2D Graph rendering), Three.js (3D Animated background)
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB Atlas (Mongoose)
-- **Auth**: JWT (JSON Web Tokens) & Bcryptjs
-- **Icons & Fonts**: Font Awesome 6, Inter (Google Fonts)
+- **Auth & Security**: JWT (JSON Web Tokens) & Bcryptjs
+- **Assets**: Font Awesome 6 (Icons), Inter (Google Fonts)
 
 ---
 
@@ -90,12 +80,20 @@ MedPath Pro is a high-performance, interactive hospital shortest path visualizer
 
 ---
 
-## 🏁 Quick Start
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js**: Version 18.0.0 or higher.
+- **MongoDB**: A running MongoDB instance (local or Atlas).
+
+### Quick Start
 
 1. **Install Dependencies**:
 
    ```bash
-   npm install --prefix server
+   cd server
+   npm install
    ```
 
 2. **Setup Environment**:
@@ -116,28 +114,26 @@ MedPath Pro is a high-performance, interactive hospital shortest path visualizer
    npm run dev
    ```
 
-   *Access at <http://localhost:5000>*
+   *Access the application at <http://localhost:5000>*
 
 ---
 
-## 🧠 DSA Analysis
+## ☁️ Deployment
 
-For a deep dive into the algorithms and data structures (Graphs, Dijkstra, euclidean distance) used in this project, refer to the [MedPath_Pro_Analysis.txt](./MedPath_Pro_Analysis.txt) file.
+This project was developed for and deployed as a **Web Service** on **Render**. Follow these steps to deploy:
+
+1. Push your code to GitHub.
+2. Go to your Render Dashboard.
+3. Select **New > Web Service**.
+4. Connect this GitHub repository.
+5. Set the **Build Command** to: `npm install --prefix server`
+6. Set the **Start Command** to: `node server/index.js`
+7. Add the necessary Environment Variables (matching your `.env` file).
+8. Click **Create Web Service** and Render will handle the rest!
 
 ---
 
 <div align="center">
-  Developed by <b>Ajay Gangwar</b>
+  Developed by <b>Ajay Gangwar</b><br>
+  <i>Developed with ❤️ for efficient healthcare logistics.</i>
 </div>
-
-## ☁️ Deployment
-
-This project is ready for deployment on **Render** using Blueprint:
-
-1. Push your code to GitHub.
-2. Go to Render Dashboard.
-3. Select **New > Blueprint**.
-4. Connect this repository and follow the prompts.
-
----
-Developed with ❤️ for efficient healthcare logistics.

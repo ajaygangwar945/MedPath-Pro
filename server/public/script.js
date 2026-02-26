@@ -147,6 +147,7 @@ const forgotSuccess = document.getElementById('forgot-success');
 const forgotError = document.getElementById('forgot-error');
 const forgotErrorText = document.getElementById('forgotErrorText');
 const closeForgotModal = document.getElementById('closeForgotModal');
+const closeDetailModal = document.getElementById('closeDetailModal');
 
 // --- Admin Dashboard ---
 const adminDashboard = document.getElementById('admin-dashboard');
@@ -334,7 +335,7 @@ function openHospitalPortal(index) {
         adminEmailInput.value = '';
         adminPasswordInput.value = '';
         adminLoginError.classList.add('hidden');
-        adminLoginModal.style.display = 'block';
+        adminLoginModal.classList.add('active');
         setTimeout(() => adminEmailInput.focus(), 100);
         return;
     }
@@ -483,7 +484,7 @@ adminHeaderBtn.onclick = () => {
     adminEmailInput.value = '';
     adminPasswordInput.value = '';
     adminLoginError.classList.add('hidden');
-    adminLoginModal.style.display = 'block';
+    adminLoginModal.classList.add('active');
     setTimeout(() => adminEmailInput.focus(), 100);
 };
 
@@ -522,7 +523,7 @@ adminLoginBtn.onclick = async () => {
     // Successful login
     localStorage.setItem('adminToken', data.token);
     adminLoginError.classList.add('hidden');
-    adminLoginModal.style.display = 'none';
+    adminLoginModal.classList.remove('active');
     showToast(`✅ Welcome, Admin! Redirecting...`);
 
     setTimeout(() => {
@@ -545,18 +546,18 @@ togglePwBtn.onclick = () => {
 // Forgot password link
 forgotPwLink.onclick = (e) => {
     e.preventDefault();
-    adminLoginModal.style.display = 'none';
+    adminLoginModal.classList.remove('active');
     forgotSuccess.classList.add('hidden');
     forgotError.classList.add('hidden');
     forgotEmailInput.value = adminEmailInput.value || '';
-    forgotPasswordModal.style.display = 'block';
+    forgotPasswordModal.classList.add('active');
     setTimeout(() => forgotEmailInput.focus(), 100);
 };
 
 backToLoginLink.onclick = (e) => {
     e.preventDefault();
-    forgotPasswordModal.style.display = 'none';
-    adminLoginModal.style.display = 'block';
+    forgotPasswordModal.classList.remove('active');
+    adminLoginModal.classList.add('active');
 };
 
 
@@ -593,8 +594,8 @@ sendResetBtn.onclick = async () => {
 
 
 window.addEventListener('click', e => {
-    if (e.target === adminLoginModal) adminLoginModal.style.display = 'none';
-    if (e.target === forgotPasswordModal) forgotPasswordModal.style.display = 'none';
+    if (e.target === adminLoginModal) adminLoginModal.classList.remove('active');
+    if (e.target === forgotPasswordModal) forgotPasswordModal.classList.remove('active');
 });
 
 
@@ -609,12 +610,12 @@ function openEditModal(index) {
     if (node.type === 'hospital') {
         editHospName.value = node.name;
         editHospBeds.value = node.availableBeds;
-        editHospitalModal.style.display = 'block';
+        editHospitalModal.classList.add('active');
     } else {
         editNodeName.value = node.name;
         editNodePhone.value = node.phone || '';
         editNodeEmail.value = node.email || '';
-        editNodeModal.style.display = 'block';
+        editNodeModal.classList.add('active');
     }
 }
 
@@ -632,7 +633,7 @@ saveNodeBtn.onclick = async () => {
     if (err) return showToast(err, 'error');
 
     Object.assign(nodes[editingNodeIndex], updates);
-    editNodeModal.style.display = 'none';
+    editNodeModal.classList.remove('active');
     editingNodeId = null;
     drawGraph();
 };
@@ -650,7 +651,7 @@ saveHospBtn.onclick = async () => {
     if (err) return showToast(err, 'error');
 
     Object.assign(nodes[editingNodeIndex], updates);
-    editHospitalModal.style.display = 'none';
+    editHospitalModal.classList.remove('active');
 
     if (currentlyActiveHospitalIndex === editingNodeIndex) {
         portalHospName.innerText = nodes[editingNodeIndex].name;
@@ -1040,26 +1041,26 @@ runBtn.addEventListener('click', () => {
 // 14. MODAL CLOSE HANDLERS
 // ============================================================================
 
-infoIcon.onclick = () => modal.style.display = 'block';
+infoIcon.onclick = () => modal.classList.add('active');
 
 document.querySelectorAll('.close-modal').forEach(btn => {
     btn.onclick = () => {
         const parentModal = btn.closest('.modal');
-        if (parentModal) parentModal.style.display = 'none';
+        if (parentModal) parentModal.classList.remove('active');
 
-        // Also ensure individual variables are handled if they don't use .modal class properly
-        modal.style.display = 'none';
-        editNodeModal.style.display = 'none';
-        editHospitalModal.style.display = 'none';
-        adminLoginModal.style.display = 'none';
-        forgotPasswordModal.style.display = 'none';
+        // Also ensure individual variables are handled
+        modal.classList.remove('active');
+        editNodeModal.classList.remove('active');
+        editHospitalModal.classList.remove('active');
+        adminLoginModal.classList.remove('active');
+        forgotPasswordModal.classList.remove('active');
     };
 });
 
 window.onclick = (e) => {
-    if (e.target === modal) modal.style.display = 'none';
-    if (e.target === editNodeModal) editNodeModal.style.display = 'none';
-    if (e.target === editHospitalModal) editHospitalModal.style.display = 'none';
+    if (e.target === modal) modal.classList.remove('active');
+    if (e.target === editNodeModal) editNodeModal.classList.remove('active');
+    if (e.target === editHospitalModal) editHospitalModal.classList.remove('active');
 };
 
 // ============================================================================
