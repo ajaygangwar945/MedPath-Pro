@@ -23,8 +23,24 @@ if (process.env.RENDER && process.env.FRONTEND_URL && process.env.FRONTEND_URL.i
 
 // ─── CORS ─────────────────────────────────────────────────────────────────
 // Allow all localhost origins (Vite / Live Server / file://)
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
+    'http://localhost:5000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5000'
+];
+
 app.use(cors({
-    origin: (origin, cb) => cb(null, true),
+    origin: (origin, cb) => {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return cb(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -76,7 +92,7 @@ async function seedAdmin() {
 // ─── Database & Server ─────────────────────────────────────────────────────
 mongoose.connect(process.env.MONGO_URI)
     .then(async () => {
-        console.log('✅ MongoDB connected:', process.env.MONGO_URI);
+        console.log('✅ MongoDB connected successfully');
         await seedAdmin();
         app.listen(PORT, () => {
             console.log(`🚀 MedPath Pro server running at http://localhost:${PORT}`);
