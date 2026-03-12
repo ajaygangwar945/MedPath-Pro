@@ -598,10 +598,11 @@ body {
     }
 
     .hero-content h1 {
-        font-size: 3rem;
+        font-size: 2.6rem;
     }
 
     .hero-content p {
+        font-size: 1.1rem;
         margin: 0 auto 2rem;
     }
 
@@ -625,7 +626,11 @@ body {
     }
 
     .section-header h2 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+    }
+
+    .section-header p {
+        font-size: 1.05rem;
     }
 
     .cta-card {
@@ -633,7 +638,11 @@ body {
     }
 
     .cta-card h2 {
-        font-size: 2.2rem;
+        font-size: 2rem;
+    }
+
+    .cta-card p {
+        font-size: 1.05rem;
     }
 }
 
@@ -660,7 +669,7 @@ body {
     }
 
     .hero-content h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
         line-height: 1.2;
     }
 
@@ -677,11 +686,24 @@ body {
     .cta-btn {
         width: 100%;
         justify-content: center;
-        padding: 0.85rem 1.5rem;
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
     }
 
     .section-header h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .section-header p {
+        font-size: 1rem;
+    }
+
+    .card-overlay h3 {
+        font-size: 1.6rem;
+    }
+
+    .card-overlay p {
+        font-size: 0.95rem;
     }
 
     .info-item {
@@ -692,27 +714,55 @@ body {
     }
 
     .info-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
         margin-bottom: 0.75rem;
     }
 
     .info-text h3 {
-        font-size: 1.1rem;
+        font-size: 1.15rem;
+    }
+
+    .info-text p {
+        font-size: 0.95rem;
     }
 }
 
 @media (max-width: 380px) {
     .hero-content h1 {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
+    }
+
+    .hero-content p {
+        font-size: 0.95rem;
     }
 
     .card-overlay h3 {
         font-size: 1.4rem;
     }
 
+    .card-overlay p {
+        font-size: 0.9rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .info-text h3 {
+        font-size: 1.05rem;
+    }
+
+    .info-text p {
+        font-size: 0.9rem;
+    }
+
     .cta-card h2 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+    }
+
+    .cta-card p {
+        font-size: 0.95rem;
     }
 }

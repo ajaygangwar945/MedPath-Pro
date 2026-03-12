@@ -1,4 +1,4 @@
-﻿/**
+/**
  * MEDPATH PRO - CORE LOGIC (script.js)
  */
 
@@ -170,6 +170,11 @@ let isAnimating = false;
 let isAdminLoggedIn = false;
 let pendingHospitalIndex = null;     // Hospital to open after admin login
 
+// --- Pan / Scroll state (mobile) ---
+// panX/panY no longer used — scrollable container handles panning
+let panX = 0, panY = 0;
+let lastTouchX = 0, lastTouchY = 0;
+
 // ============================================================================
 // 3. DATA LOADING (from MongoDB via API)
 // ============================================================================
@@ -224,8 +229,15 @@ async function loadData() {
 // ============================================================================
 
 function resizeCanvas() {
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        // Large virtual canvas so all nodes are visible via scroll
+        canvas.width  = Math.max(1000, container.scrollWidth);
+        canvas.height = Math.max(800,  container.scrollHeight);
+    } else {
+        canvas.width  = container.clientWidth;
+        canvas.height = container.clientHeight;
+    }
     drawGraph();
 }
 
@@ -324,6 +336,131 @@ canvas.addEventListener('mousedown', async (e) => {
     }
     drawGraph();
 });
+
+// ============================================================================
+// 4b. TOUCH SUPPORT FOR CANVAS (Mobile)
+// ============================================================================
+
+/**
+ * Touch tap-vs-scroll detection:
+ * - touchstart (passive) records where the finger landed — does NOT prevent scroll
+ * - touchend: if the finger moved less than 10px it's a tap → fire interaction logic
+ * - If the finger moved more (a scroll), do nothing extra — container scrolls natively
+ */
+let touchStartX = 0, touchStartY = 0;
+
+canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 0) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    // passive: true (default) — browser handles scroll naturally
+}, { passive: true });
+
+canvas.addEventListener('touchend', async (e) => {
+    if (e.changedTouches.length === 0) return;
+
+    const touch = e.changedTouches[0];
+    const dx = Math.abs(touch.clientX - touchStartX);
+    const dy = Math.abs(touch.clientY - touchStartY);
+
+    // Only treat as a tap if finger barely moved (not a scroll gesture)
+    if (dx > 10 || dy > 10) return;
+
+    const rect = canvas.getBoundingClientRect();
+    // Adjust for scroll position inside the canvas container
+    const scrollLeft = container.scrollLeft;
+    const scrollTop  = container.scrollTop;
+    const x = touch.clientX - rect.left + scrollLeft;
+    const y = touch.clientY - rect.top  + scrollTop;
+
+    const clickedIndex = findNodeAt(x, y);
+
+    if (currentMode === 'edge') {
+        if (clickedIndex !== null) {
+            if (selectedNodeIndex === null) {
+                selectedNodeIndex = clickedIndex;
+            } else if (selectedNodeIndex !== clickedIndex) {
+                const dist = calculateDistance(nodes[selectedNodeIndex], nodes[clickedIndex]);
+                const from = nodes[selectedNodeIndex].id;
+                const to = nodes[clickedIndex].id;
+                const weight = Math.round(dist / 10);
+
+                const exists = edges.some(e =>
+                    (e.from === from && e.to === to) || (e.from === to && e.to === from)
+                );
+                if (!exists) {
+                    const tempEdge = { from, to, weight };
+                    edges.push(tempEdge);
+                    drawGraph();
+
+                    const [saved, err] = await apiFetch(`${API}/edges`, {
+                        method: 'POST',
+                        body: JSON.stringify({ from, to, weight })
+                    });
+                    if (err) {
+                        edges.pop();
+                        showToast(`Failed to save edge: ${err}`, 'error');
+                    } else {
+                        edges[edges.length - 1]._id = saved._id;
+                    }
+                }
+                selectedNodeIndex = null;
+            }
+        }
+    } else {
+        if (clickedIndex !== null) {
+            const node = nodes[clickedIndex];
+            if (node.type === 'hospital') {
+                openHospitalPortal(clickedIndex);
+            } else {
+                openEditModal(clickedIndex);
+            }
+        } else {
+            // Add new node at tap point
+            const margin = 50;
+            const clampedX = Math.max(margin, Math.min(canvas.width - margin, x));
+            const clampedY = Math.max(margin, Math.min(canvas.height - margin, y));
+            const newId = nodes.length > 0 ? Math.max(...nodes.map(n => n.id)) + 1 : 0;
+
+            const newNode = {
+                id: newId, x: clampedX, y: clampedY,
+                type: currentMode,
+                name: currentMode === 'hospital' ? `Hospital ${newId}` : `User ${newId}`,
+                phone: currentMode === 'user' ? '+1 234 567 890' : '',
+                email: currentMode === 'user' ? 'user@example.com' : '',
+                availableBeds: currentMode === 'hospital' ? 20 : 0,
+                approved: false
+            };
+
+            nodes.push(newNode);
+            emptyState.style.display = 'none';
+            drawGraph();
+
+            const [saved, err] = await apiFetch(`${API}/nodes`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    nodeId: newNode.id,
+                    x: newNode.x, y: newNode.y,
+                    type: newNode.type,
+                    name: newNode.name,
+                    phone: newNode.phone,
+                    email: newNode.email,
+                    availableBeds: newNode.availableBeds
+                })
+            });
+
+            if (err) {
+                nodes.pop();
+                showToast(`Failed to save node: ${err}`, 'error');
+                drawGraph();
+            } else {
+                nodes[nodes.length - 1]._id = saved._id;
+            }
+        }
+    }
+    drawGraph();
+}, { passive: true });
+
 
 // ============================================================================
 // 5. HOSPITAL PORTAL
@@ -779,6 +916,15 @@ function drawGraph() {
     });
 
     // Nodes (Premium Gradients)
+    const nodeRadius  = 22;
+    const iconSize    = 16;
+    const labelFont   = 'bold 12px Inter';
+    const subFont     = '500 10px Inter';
+    const bedsFont    = 'bold 10px Inter';
+    const labelOffset = 32;  // y + 32
+    const idOffset    = 48;  // y + 48
+    const bedsOffset  = 62;  // y + 62
+
     nodes.forEach((node, index) => {
         const isSelected = index === selectedNodeIndex;
 
@@ -787,7 +933,7 @@ function drawGraph() {
         ctx.shadowBlur = isSelected ? 25 : 15;
 
         // Node Body
-        const gradient = ctx.createRadialGradient(node.x - 5, node.y - 5, 5, node.x, node.y, 22);
+        const gradient = ctx.createRadialGradient(node.x - 5, node.y - 5, 5, node.x, node.y, nodeRadius);
         if (isSelected) {
             gradient.addColorStop(0, '#5eead4');
             gradient.addColorStop(1, '#14b8a6');
@@ -800,7 +946,7 @@ function drawGraph() {
         }
 
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 22, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, nodeRadius, 0, Math.PI * 2);
         ctx.fillStyle = gradient;
         ctx.fill();
 
@@ -814,26 +960,26 @@ function drawGraph() {
         ctx.fillStyle = 'white';
         ctx.shadowColor = 'rgba(0,0,0,0.5)';
         ctx.shadowBlur = 4;
-        ctx.font = '900 16px "Font Awesome 6 Free"';
+        ctx.font = `900 ${iconSize}px "Font Awesome 6 Free"`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(node.type === 'hospital' ? '\uf0f8' : '\uf007', node.x, node.y);
 
         // Label
         ctx.shadowBlur = 0;
-        ctx.font = 'bold 12px Inter';
+        ctx.font = labelFont;
         ctx.fillStyle = isDarkMode ? '#ffffff' : '#1e293b';
         ctx.textBaseline = 'top';
-        ctx.fillText(node.name, node.x, node.y + 32);
+        ctx.fillText(node.name, node.x, node.y + labelOffset);
 
-        ctx.font = '500 10px Inter';
+        ctx.font = subFont;
         ctx.fillStyle = isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(15, 23, 42, 0.6)';
-        ctx.fillText(`ID: ${node.id}`, node.x, node.y + 48);
+        ctx.fillText(`ID: ${node.id}`, node.x, node.y + idOffset);
 
         if (node.type === 'hospital') {
             ctx.fillStyle = isDarkMode ? '#ff8080' : '#dc2626';
-            ctx.font = 'bold 10px Inter';
-            ctx.fillText(`Beds: ${node.availableBeds}`, node.x, node.y + 62);
+            ctx.font = bedsFont;
+            ctx.fillText(`Beds: ${node.availableBeds}`, node.x, node.y + bedsOffset);
         }
     });
 }

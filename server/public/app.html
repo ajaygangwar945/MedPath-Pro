@@ -10,7 +10,7 @@
     -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedPath Pro | Hospital Path Visualizer</title>
+    <title>MedPath Pro</title>
 
     <!-- Dynamic SVG Icon (MedPath Cross with teal circle) -->
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
@@ -73,11 +73,17 @@
     <!-- MAIN APP SHELL: Contains the interactive canvas and results sidebar -->
     <div id="app-shell">
         <main>
-            <!-- CANVAS AREA: Where graph nodes and edges are drawn -->
-            <div id="canvas-container">
-                <canvas id="graph-canvas"></canvas>
-                <!-- empty-state: Helper text visible when no nodes are present -->
-                <div id="empty-state">Click to add hospitals or users</div>
+            <!-- canvas-scroll-wrapper: on mobile, owns the border-radius + clip so
+                 scrollbars inside canvas-container are rounded properly -->
+            <div class="canvas-scroll-wrapper">
+                <div id="canvas-container">
+                    <canvas id="graph-canvas"></canvas>
+                    <div id="empty-state">Click to add hospitals or users</div>
+                    <!-- Mobile pan toggle: switches between draw/tap and pan mode -->
+                    <button id="panToggleBtn" class="pan-toggle-btn" title="Toggle Pan Mode">
+                        <i class="fas fa-hand-paper"></i>
+                    </button>
+                </div>
             </div>
         </main>
 
