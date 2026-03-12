@@ -67,6 +67,15 @@ function authHeaders() {
         : { 'Content-Type': 'application/json' };
 }
 
+/** Escapes HTML characters to prevent XSS */
+function sanitizeHTML(str) {
+    if (str === null || str === undefined) return '';
+    const s = String(str);
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+}
+
 /** Generic JSON fetch wrapper — returns [data, error]. */
 async function apiFetch(url, options = {}) {
     try {
@@ -78,7 +87,7 @@ async function apiFetch(url, options = {}) {
         if (!res.ok) return [null, data.error || 'Server error'];
         return [data, null];
     } catch (err) {
-        return [null, 'Cannot reach server. Is it running on port 5001?'];
+        return [null, 'Cannot reach server. Please ensure the backend is running on port 5000.'];
     }
 }
 
@@ -510,11 +519,18 @@ function renderPortalNotifications() {
             const card = document.createElement('div');
             card.className = 'notification-card';
 
+            const mongoId = sanitizeHTML(notif._id);
+            const userName = sanitizeHTML(notif.userName);
+            const sourceIndex = sanitizeHTML(notif.sourceNodeIndex);
+            const distance = sanitizeHTML(notif.distance);
+            const path = sanitizeHTML(notif.path);
+            const status = sanitizeHTML(notif.status);
+
             const actionBtns = (notif.status === 'pending' && isAdminLoggedIn)
-                ? `<button class="btn btn-run" onclick="portalApprove('${notif._id}')">
+                ? `<button class="btn btn-run" onclick="portalApprove('${mongoId}')">
                        <i class="fas fa-circle-check"></i> Approve
                    </button>
-                   <button class="btn btn-reject" onclick="portalReject('${notif._id}')">
+                   <button class="btn btn-reject" onclick="portalReject('${mongoId}')">
                        <i class="fas fa-circle-xmark"></i> Reject
                    </button>` : '';
 
@@ -522,16 +538,16 @@ function renderPortalNotifications() {
                 : notif.status === 'rejected' ? 'status-rejected' : 'status-pending';
 
             const detailLine = notif.status === 'approved'
-                ? `<p>Distance: <b>${notif.distance}</b> | Path: ${notif.path}</p>`
+                ? `<p>Distance: <b>${distance}</b> | Path: ${path}</p>`
                 : notif.status === 'rejected'
                     ? '<p><i>Request was rejected by the hospital.</i></p>'
                     : '<p><i>Awaiting admin review...</i></p>';
 
             card.innerHTML = `
                 <div class="notif-info">
-                    <h4>From: ${notif.userName} (ID: ${notif.sourceNodeIndex})</h4>
+                    <h4>From: ${userName} (ID: ${sourceIndex})</h4>
                     ${detailLine}
-                    <div class="status-badge ${badgeClass}">${notif.status}</div>
+                    <div class="status-badge ${badgeClass}">${status}</div>
                 </div>
                 <div class="notif-actions">${actionBtns}</div>
             `;
@@ -1016,11 +1032,15 @@ function displayResults(source) {
         }
         path.reverse();
 
+        const sourceName = sanitizeHTML(sourceNode.name);
+        const targetName = sanitizeHTML(targetNode.name);
+        const safePath = path.map(p => sanitizeHTML(p)).join(' → ');
+
         const div = document.createElement('div');
         div.className = 'path-item';
         div.innerHTML = `
-            <div class="path-info"><b>${sourceNode.name}</b> → <b>${targetNode.name}</b>: ${distance}</div>
-            <div class="path-visual">${path.join(' → ')}</div>
+            <div class="path-info"><b>${sourceName}</b> → <b>${targetName}</b>: ${sanitizeHTML(distance)}</div>
+            <div class="path-visual">${safePath}</div>
         `;
 
         if (targetNode.type === 'hospital') {
@@ -1040,10 +1060,12 @@ function displayResults(source) {
 
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-    toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+    const safeMsg = sanitizeHTML(message);
+    toast.innerHTML = `<i class="fas ${icon}"></i><span>${safeMsg}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
         toast.classList.add('fade-out');

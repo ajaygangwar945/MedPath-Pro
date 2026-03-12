@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // ─── POST /api/edges ──────────────────────────────────────────────────────
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     try {
         const { from, to, weight } = req.body;
         // Prevent duplicate edges

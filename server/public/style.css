@@ -466,22 +466,45 @@ footer {
 }
 
 .input-container {
-    background: white;
-    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
     border-radius: 8px;
     padding: 6px 12px;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.input-container:focus-within {
+    border-color: var(--primary-teal);
+    box-shadow: var(--shadow-neon);
+}
+
+.input-container label {
+    color: var(--text-dim) !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    opacity: 1 !important;
 }
 
 .input-container input {
     background: transparent;
     border: none;
+    color: var(--text-bright) !important;
     font-weight: 800;
     width: 70px;
     text-align: center;
     font-size: 1.1rem;
+    outline: none;
+}
+
+.input-container input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.5;
 }
 
 /* --- BUTTONS SYSTEM --- */

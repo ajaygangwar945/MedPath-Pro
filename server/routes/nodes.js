@@ -18,8 +18,8 @@ router.get('/', async (req, res) => {
 });
 
 // ─── POST /api/nodes ──────────────────────────────────────────────────────
-// Creates a new node. No auth needed (anyone can add to visualizer).
-router.post('/', async (req, res) => {
+// Creates a new node. Protected for admin only.
+router.post('/', auth, async (req, res) => {
     try {
         const { nodeId, x, y, type, name, phone, email, availableBeds } = req.body;
         const node = new Node({ nodeId, x, y, type, name, phone, email, availableBeds });
@@ -32,10 +32,16 @@ router.post('/', async (req, res) => {
 });
 
 // ─── PATCH /api/nodes/:id ─────────────────────────────────────────────────
-// Updates node fields (name, phone, email, beds). No auth needed.
-router.patch('/:id', async (req, res) => {
+// Updates node fields (name, phone, email, beds). Protected for admin only.
+router.patch('/:id', auth, async (req, res) => {
     try {
-        const node = await Node.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { name, phone, email, availableBeds, x, y, type } = req.body;
+        const updateData = { name, phone, email, availableBeds, x, y, type };
+        
+        // Remove undefined fields to avoid overwriting with null
+        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+        const node = await Node.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!node) return res.status(404).json({ error: 'Node not found' });
         res.json(node);
     } catch (err) {

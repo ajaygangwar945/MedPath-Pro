@@ -11,6 +11,14 @@ function authHeaders() {
         : { 'Content-Type': 'application/json' };
 }
 
+/** Escapes HTML characters to prevent XSS */
+function sanitizeHTML(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 async function apiFetch(url, options = {}) {
     try {
         const res = await fetch(url, {
@@ -21,7 +29,7 @@ async function apiFetch(url, options = {}) {
         if (!res.ok) return [null, data.error || 'Server error'];
         return [data, null];
     } catch (err) {
-        return [null, 'Cannot reach server.'];
+        return [null, 'Cannot reach server. Please ensure the backend is running on port 5000.'];
     }
 }
 
@@ -126,23 +134,26 @@ function renderAdminUsers() {
     }
     grid.innerHTML = users.map((u, idx) => {
         const delay = idx * 0.05;
-        // The user specifically asked to REMOVE the approve button from here
-        // and only show it after opening details.
+        const name = sanitizeHTML(u.name);
+        const phone = sanitizeHTML(u.phone);
+        const email = sanitizeHTML(u.email);
+        const nodeId = sanitizeHTML(u.nodeId);
+        const mongoId = sanitizeHTML(u._id);
 
         return `
         <div class="admin-card user-card animate-in type-user ${u.approved ? 'status-approved' : 'status-pending'}" style="animation-delay: ${delay}s">
             <div class="admin-card-icon user-bg"><i class="fas fa-user-ninja"></i></div>
             <div class="admin-card-info">
-                <h4>${u.name} <span class="node-id-tag">ID: ${u.nodeId}</span></h4>
-                <p><i class="fas fa-phone"></i> ${u.phone || 'N/A'}</p>
-                <p><i class="fas fa-envelope"></i> ${u.email || 'N/A'}</p>
+                <h4>${name} <span class="node-id-tag">ID: ${nodeId}</span></h4>
+                <p><i class="fas fa-phone"></i> ${phone || 'N/A'}</p>
+                <p><i class="fas fa-envelope"></i> ${email || 'N/A'}</p>
                 <div class="status-badge ${u.approved ? 'status-approved' : 'status-pending'} interactive-badge" 
-                     onclick="openDetailModal('user', '${u._id}')" title="Click to verify">
+                     onclick="openDetailModal('user', '${mongoId}')" title="Click to verify">
                     ${u.approved ? 'Approved' : 'Pending Verification'}
                 </div>
             </div>
             <div class="admin-card-actions">
-                <button class="admin-btn-delete" onclick="adminDeleteNode('${u._id}')">
+                <button class="admin-btn-delete" onclick="adminDeleteNode('${mongoId}')">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
@@ -160,16 +171,21 @@ function renderAdminHospitals() {
     grid.innerHTML = hospitals.map((h, idx) => {
         const pending = notifications.filter(n => n.targetNodeIndex === h.nodeId && n.status === 'pending');
         const delay = idx * 0.05;
+        const name = sanitizeHTML(h.name);
+        const nodeId = sanitizeHTML(h.nodeId);
+        const beds = sanitizeHTML(h.availableBeds);
+        const mongoId = sanitizeHTML(h._id);
+
         return `
         <div class="admin-card hospital-card animate-in type-hospital" style="animation-delay: ${delay}s">
             <div class="admin-card-icon hosp-icon"><i class="fas fa-hospital-user"></i></div>
             <div class="admin-card-info">
-                <h4>${h.name} <span class="node-id-tag">ID: ${h.nodeId}</span></h4>
-                <p><i class="fas fa-bed"></i> Available Beds: <strong>${h.availableBeds}</strong></p>
+                <h4>${name} <span class="node-id-tag">ID: ${nodeId}</span></h4>
+                <p><i class="fas fa-bed"></i> Available Beds: <strong>${beds}</strong></p>
                 <p><i class="fas fa-clock"></i> Pending Requests: <strong>${pending.length}</strong></p>
             </div>
             <div class="admin-card-actions">
-                <button class="admin-btn-delete" onclick="adminDeleteNode('${h._id}')">
+                <button class="admin-btn-delete" onclick="adminDeleteNode('${mongoId}')">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
@@ -189,11 +205,19 @@ function renderAdminRequests() {
         const delay = idx * 0.05;
         const badgeClass = n.status === 'approved' ? 'status-approved'
             : n.status === 'rejected' ? 'status-rejected' : 'status-pending';
+        
+        const fromName = sanitizeHTML(fromNode ? fromNode.name : `User #${n.sourceNodeIndex}`);
+        const toName = sanitizeHTML(toNode ? toNode.name : `Hospital #${n.targetNodeIndex}`);
+        const status = sanitizeHTML(n.status);
+        const distance = sanitizeHTML(n.distance);
+        const path = sanitizeHTML(n.path);
+        const mongoId = sanitizeHTML(n._id);
+
         const actions = n.status === 'pending' ? `
-            <button class="admin-btn-approve" onclick="adminApproveReq('${n._id}')">
+            <button class="admin-btn-approve" onclick="adminApproveReq('${mongoId}')">
                 <i class="fas fa-circle-check"></i> Approve
             </button>
-            <button class="admin-btn-delete" onclick="adminRejectReq('${n._id}')">
+            <button class="admin-btn-delete" onclick="adminRejectReq('${mongoId}')">
                 <i class="fas fa-circle-xmark"></i> Reject
             </button>` : '';
 
@@ -202,12 +226,11 @@ function renderAdminRequests() {
             <div class="admin-card-icon req-icon"><i class="fas fa-truck-medical"></i></div>
             <div class="admin-card-info">
                 <h4>
-                    ${fromNode ? fromNode.name : `User #${n.sourceNodeIndex}`}
-                    → ${toNode ? toNode.name : `Hospital #${n.targetNodeIndex}`}
-                    <span class="status-badge ${badgeClass}">${n.status}</span>
+                    ${fromName} → ${toName}
+                    <span class="status-badge ${badgeClass}">${status}</span>
                 </h4>
-                <p><i class="fas fa-ruler-combined"></i> Distance: <strong>${n.distance}</strong></p>
-                <p><i class=" Diamond-turn-right"></i> Path: <strong>${n.path}</strong></p>
+                <p><i class="fas fa-ruler-combined"></i> Distance: <strong>${distance}</strong></p>
+                <p><i class=" Diamond-turn-right"></i> Path: <strong>${path}</strong></p>
             </div>
             <div class="admin-card-actions">${actions}</div>
         </div>`;
@@ -310,18 +333,19 @@ function openDetailModal(type, mongoId) {
 
     // Build actions
     let actionsHtml = '';
+    const sanitizedId = sanitizeHTML(item._id);
     if (!item.approved) {
         actionsHtml = `
-            <button class="admin-btn-approve" onclick="confirmApproveInModal('${item._id}')">
+            <button class="admin-btn-approve" onclick="confirmApproveInModal('${sanitizedId}')">
                 <i class="fas fa-check"></i> Approve
             </button>
-            <button class="admin-btn-delete" onclick="confirmRejectInModal('${item._id}')">
+            <button class="admin-btn-delete" onclick="confirmRejectInModal('${sanitizedId}')">
                 <i class="fas fa-times"></i> Reject
             </button>
         `;
     } else {
         actionsHtml = `
-            <button class="admin-btn-unapprove" onclick="confirmUnapproveInModal('${item._id}')">
+            <button class="admin-btn-unapprove" onclick="confirmUnapproveInModal('${sanitizedId}')">
                 <i class="fas fa-undo"></i> Unapprove
             </button>
         `;
