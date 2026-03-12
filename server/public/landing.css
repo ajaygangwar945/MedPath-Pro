@@ -578,21 +578,141 @@ body {
 }
 
 @media (max-width: 968px) {
+    .container {
+        padding: 0 1.5rem;
+    }
 
-    .hero .container,
-    .feature-grid {
+    .navbar {
+        height: 70px;
+    }
+
+    .hero {
+        padding: 120px 0 60px;
+        min-height: auto;
+    }
+
+    .hero .container {
         grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
     }
 
     .hero-content h1 {
         font-size: 3rem;
     }
 
+    .hero-content p {
+        margin: 0 auto 2rem;
+    }
+
+    .hero-btns {
+        justify-content: center;
+    }
+
     .hero-image {
         order: -1;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
     }
 
     .hospital-scene-card {
         height: 350px;
     }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+    }
+
+    .cta-card {
+        padding: 3rem 1.5rem;
+    }
+
+    .cta-card h2 {
+        font-size: 2.2rem;
+    }
 }
+
+@media (max-width: 640px) {
+    .navbar {
+        height: 60px;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    .logo span {
+        display: none;
+    }
+
+    .navbar .nav-actions {
+        gap: 0.5rem;
+    }
+
+    .nav-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .hero-btns {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .cta-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.85rem 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1.25rem;
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-text h3 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .card-overlay h3 {
+        font-size: 1.4rem;
+    }
+
+    .cta-card h2 {
+        font-size: 1.8rem;
+    }
+}

@@ -1,4 +1,4 @@
-﻿/* 
+/* 
 ============================================================================
    MEDPATH PRO - DESIGN SYSTEM (style.css)
    Contains core variables, layout grids, component styles, 
@@ -2360,7 +2360,57 @@ footer {
     grid-column: span 2;
 }
 
+@media (max-width: 1024px) {
+    #app-shell {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+        overflow-y: auto;
+    }
+
+    #results-sidebar {
+        width: 100%;
+        height: auto;
+        min-height: 250px;
+    }
+
+    #canvas-container {
+        height: 450px;
+        flex-shrink: 0;
+    }
+
+    .admin-stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 850px) {
+    header {
+        padding: 0 1.25rem;
+    }
+
+    header h1 {
+        font-size: 1.1rem;
+    }
+
+    .logo-area svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .header-actions {
+        gap: 0.75rem;
+    }
+
+    .admin-header-btn {
+        padding: 0 1rem;
+        font-size: 0.8rem;
+    }
+
+    .admin-header-btn i {
+        font-size: 0.9rem;
+    }
+
     .detail-modal-content.split-layout {
         flex-direction: column;
         height: auto;
@@ -2369,13 +2419,145 @@ footer {
     }
 
     .detail-visual-pane {
-        padding: 3rem 1rem;
-        height: 300px;
+        padding: 2rem 1rem;
+        height: 280px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .med-identity-card {
-        width: 280px;
-        height: 180px;
+        width: 260px;
+        height: 160px;
+    }
+
+    .portal-grid {
+        grid-template-columns: 1fr;
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    footer {
+        height: auto;
+        padding: 1rem;
+        background: var(--bg-card); /* Ensure solid-ish backdrop on mobile */
+    }
+
+    .toolbar {
+        flex-direction: column;
+        height: auto;
+        gap: 1.25rem;
+        padding: 0.5rem 0;
+    }
+
+    .left-group, .center-group, .right-group {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .center-group {
+        order: -1; /* Put Dijkstra controls on top of toolbar in mobile */
+        border-bottom: 1px solid var(--border-glass);
+        padding-bottom: 1.25rem;
+    }
+
+    .admin-dash-header {
+        flex-direction: column;
+        gap: 1.25rem;
+        text-align: center;
+        padding: 1.5rem 1rem;
+    }
+
+    .admin-dash-logo div h2 {
+        font-size: 1.4rem;
+    }
+
+    .admin-dash-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .admin-tabs {
+        padding: 0.75rem 1rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-tab {
+        margin-right: 0.5rem;
+        padding: 0 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .admin-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        display: none;
+    }
+
+    .logo-area {
+        gap: 0.5rem;
+    }
+
+    .btn {
+        padding: 0 1rem;
+        font-size: 0.85rem;
+        height: 40px;
+    }
+
+    .admin-stats-bar {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .admin-email-tag {
+        display: none;
+    }
+
+    .input-container input {
+        width: 50px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 350px) {
+    .header-actions {
+        gap: 0.5rem;
+    }
+
+    .admin-header-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .admin-header-btn i {
+        margin: 0;
+    }
+
+    .admin-header-btn {
+        text-indent: -9999px; /* Hide text but keep icon */
+    }
+
+    .admin-header-btn i {
+        text-indent: 0;
     }
 }
 
@@ -2398,11 +2580,9 @@ footer {
 
 .detail-modal-content .close-modal {
     position: absolute;
-    right: 3rem;
-    /* Aligned with padding */
-    top: 3rem;
-    /* Aligned with padding */
-    font-size: 1.8rem;
+    right: 2rem;
+    top: 2rem;
+    font-size: 1.5rem;
     color: rgba(255, 255, 255, 0.4);
     cursor: pointer;
     z-index: 100;
@@ -2413,4 +2593,4 @@ footer {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-}
+}
