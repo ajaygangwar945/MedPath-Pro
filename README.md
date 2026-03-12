@@ -1,4 +1,4 @@
-<img align="center" src="./banner.png" width="100%" height="200" style="object-fit: cover">
+<img align="center" src="./banner_v2.png" width="100%" height="200" style="object-fit: cover">
 
 <h1 align="center">🏥 MedPath Pro</h1>
 
