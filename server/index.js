@@ -18,9 +18,15 @@ const Admin = require('./models/Admin');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Update FRONTEND_URL if it's localhost but we are on Render
-if (process.env.RENDER && process.env.FRONTEND_URL && process.env.FRONTEND_URL.includes('localhost')) {
-    process.env.FRONTEND_URL = `https://${process.env.RENDER_EXTERNAL_HOSTNAME}`;
+// Update FRONTEND_URL if we are on Render
+if (process.env.RENDER) {
+    const renderHost = process.env.RENDER_EXTERNAL_HOSTNAME || 
+                      (process.env.RENDER_SERVICE_ID ? `${process.env.RENDER_SERVICE_ID}.onrender.com` : null);
+    
+    if (renderHost && (!process.env.FRONTEND_URL || process.env.FRONTEND_URL.includes('localhost'))) {
+        process.env.FRONTEND_URL = `https://${renderHost}`;
+        console.log(`🌐 Auto-detected Render URL: ${process.env.FRONTEND_URL}`);
+    }
 }
 
 // ─── Security Headers ──────────────────────────────────────────────────────
@@ -32,7 +38,7 @@ app.use(helmet({
             "script-src": ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
             "style-src": ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
             "font-src": ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
-            "connect-src": ["'self'", "http://localhost:*", "ws://localhost:*", "http://127.0.0.1:*", "ws://127.0.0.1:*"]
+            "connect-src": ["'self'", "http://localhost:*", "ws://localhost:*", "http://127.0.0.1:*", "ws://127.0.0.1:*", "https://*.onrender.com"]
         },
     },
 }));
@@ -60,11 +66,18 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, cb) => {
-        // Allow requests with no origin (like mobile apps or curl)
+        // Allow requests with no origin (like same-origin, mobile apps or curl)
         if (!origin) return cb(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
+        
+        const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                         origin.startsWith('http://localhost') || 
+                         origin.startsWith('http://127.0.0.1') ||
+                         origin.includes('.onrender.com');
+
+        if (isAllowed) {
             cb(null, true);
         } else {
+            console.warn(`⚠️ CORS blocked for origin: ${origin}`);
             cb(new Error('Not allowed by CORS'));
         }
     },
@@ -99,7 +112,13 @@ async function seedAdmin() {
     }
 
     try {
-        const existing = await Admin.findOne({ email: email.toLowerCase() });
+        // DELETE any other admins that don't match the current ENV email
+        const deleteResult = await Admin.deleteMany({ email: { $ne: email.toLowerCase() } });
+        if (deleteResult.deletedCount > 0) {
+            console.log(`🧹 Cleaned up ${deleteResult.deletedCount} unconfigured admin accounts.`);
+        }
+
+        const existing = await Admin.findOne({ email: email.toLowerCase().trim() });
         if (existing) {
             console.log('ℹ️ Admin user already exists, skipping seed.');
             return;
@@ -107,7 +126,7 @@ async function seedAdmin() {
 
         const hashedPassword = await bcrypt.hash(password, 12);
         await Admin.create({
-            email: email.toLowerCase(),
+            email: email.toLowerCase().trim(),
             password: hashedPassword
         });
         console.log(`✅ Admin account created automatically: ${email}`);

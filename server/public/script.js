@@ -87,7 +87,7 @@ async function apiFetch(url, options = {}) {
         if (!res.ok) return [null, data.error || 'Server error'];
         return [data, null];
     } catch (err) {
-        return [null, 'Cannot reach server. Please ensure the backend is running on port 5000.'];
+        return [null, 'Cannot reach server. Please check your internet connection or if the backend service is awake.'];
     }
 }
 
