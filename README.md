@@ -70,15 +70,20 @@ The project is live and accessible online.
 
 ```bash
 ├── server/             # Express.js Backend
-│   ├── middleware/    # Auth Guards & Security Logic
+│   ├── middleware/    # Auth Guards (JWT verification)
 │   ├── models/        # Mongoose Schemas (Admin, Node, Edge, Notification)
-│   ├── routes/        # API Endpoints (Auth, Nodes, Edges, Notifications)
-│   ├── public/        # Optimized Frontend (Served by Express)
-│   │   ├── assets/    # High-resolution clinical visuals & favicons
-│   │   └── ...        # landing.html, app.html, admin.html, admin.js
-│   └── index.js       # Core Server Entry & Auto-Seeding Logic
-├── MedPath-Pro-Analysis.txt # Complete DSA Technical Analysis
-└── render.yaml        # Infrastructure as Code (Render)
+│   ├── routes/        # RESTful API Endpoints (Auth, Nodes, Edges, Notifs)
+│   ├── public/        # Optimized Frontend (Static Assets)
+│   │   ├── assets/    # High-res clinical visuals & icons
+│   │   ├── index.html # Immersive Landing Page (Three.js)
+│   │   ├── app.html   # Main Interactive Map Visualizer
+│   │   ├── admin.html # Secure Administrative Control Panel
+│   │   ├── script.js  # Core Client Logic (Dijkstra implementation)
+│   │   ├── admin.js   # Dashboard Lifecycle & Request Management
+│   │   └── style.css  # Global Glassmorphism & Responsive Design
+│   └── index.js       # Server Entry Point & Multi-Model Seeding
+├── MedPath-Pro-Analysis.txt # Complete DSA & Architectural Analysis
+└── render.yaml        # Infrastructure as Code (Render Cloud)
 ```
 
 ---

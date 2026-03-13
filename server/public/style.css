@@ -549,13 +549,14 @@ footer {
 }
 
 .btn-outline {
-    border-color: var(--hospital-neon);
-    color: var(--hospital-neon);
+    border-color: var(--primary-teal);
+    color: var(--primary-teal);
 }
 
 .btn-outline:hover {
-    background: var(--hospital-neon);
-    color: white;
+    background: var(--primary-teal);
+    color: var(--bg-main);
+    box-shadow: 0 0 15px var(--primary-glow);
 }
 
 /* --- MODALS (Overlays) --- */
@@ -1294,7 +1295,7 @@ footer {
 .btn-logout:hover {
     background: #ef4444;
     color: white;
-    border-color: #ef4444;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
 }
 
 /* ============================================================================
@@ -2819,6 +2820,11 @@ footer {
         gap: 0.5rem;
     }
 
+    .admin-dash-actions .nav-text,
+    .header-actions .nav-text {
+        display: none !important;
+    }
+
     .admin-stats-bar {
         display: flex;
         flex-wrap: wrap;
@@ -3027,11 +3033,13 @@ footer {
         justify-content: center !important;
         gap: 0 !important;
         border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
 
     .admin-dash-actions .btn i {
         margin: 0 !important;
-        font-size: 1rem;
+        font-size: 1.1rem;
+        color: inherit; /* Inherit from button text color (teal or dark on hover) */
     }
 
     #canvas-container {
