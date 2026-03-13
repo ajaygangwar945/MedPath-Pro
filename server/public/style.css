@@ -520,6 +520,7 @@ footer {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
     font-size: 0.9rem;
 }
@@ -2072,6 +2073,23 @@ footer {
     box-shadow: 0 4px 12px rgba(34, 211, 238, 0.2);
 }
 
+.clickable-card {
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.clickable-card:hover {
+    transform: translateY(-8px) scale(1.01) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--secondary-cyan) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(34, 211, 238, 0.1) !important;
+}
+
+.light-theme .clickable-card:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+}
+
 /* ==========================================================================
    DETAIL MODAL — PREMIUM REDESIGN
    ========================================================================== */
@@ -2430,14 +2448,34 @@ footer {
 .modal-theme-hospital .detail-visual-pane {
     background: linear-gradient(160deg, #991b1b 0%, #0f172a 60%);
 }
-
 .modal-theme-hospital .detail-visual-pane::before {
     background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
 }
-
 .modal-theme-hospital .card-logo { color: #f87171; }
 .modal-theme-hospital .med-identity-card { border-color: rgba(248,113,113,0.25); }
 .modal-theme-hospital .card-glow { background: radial-gradient(circle, rgba(239,68,68,0.4) 0%, transparent 70%); }
+
+/* --- USER variant accent --- */
+.modal-theme-user .detail-visual-pane {
+    background: linear-gradient(160deg, #0e7490 0%, #0f172a 60%);
+}
+.modal-theme-user .detail-visual-pane::before {
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.25) 0%, transparent 70%);
+}
+.modal-theme-user .card-logo { color: #22d3ee; }
+.modal-theme-user .med-identity-card { border-color: rgba(34,211,238,0.25); }
+.modal-theme-user .card-glow { background: radial-gradient(circle, rgba(34,211,238,0.4) 0%, transparent 70%); }
+
+/* --- REQUEST variant accent --- */
+.modal-theme-request .detail-visual-pane {
+    background: linear-gradient(160deg, #312e81 0%, #0f172a 60%);
+}
+.modal-theme-request .detail-visual-pane::before {
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+}
+.modal-theme-request .card-logo { color: #818cf8; }
+.modal-theme-request .med-identity-card { border-color: rgba(129,140,248,0.25); }
+.modal-theme-request .card-glow { background: radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 70%); }
 
 /* --- LIGHT THEME OVERRIDES --- */
 .light-theme .detail-modal-content.split-layout {
@@ -2498,83 +2536,94 @@ footer {
         flex: none;
         border-right: none;
         border-bottom: 1px solid rgba(255,255,255,0.08);
-        padding: 1.5rem 1.25rem;
-        gap: 1.25rem;
+        padding: 1.25rem 1rem;
+        gap: 1rem;
     }
 
     .detail-visual-pane::before { display: none; }
 
     .master-profile-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 1.75rem;
-        border-radius: 18px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+        border-radius: 16px;
     }
 
     .profile-hub h2 { 
-        font-size: 1.15rem; 
-        margin-bottom: 0.25rem;
+        font-size: 1.1rem; 
+        margin-bottom: 0.15rem;
     }
 
     .detail-type-tag {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.75rem;
+        font-size: 0.65rem;
+        padding: 0.15rem 0.6rem;
     }
 
     .med-identity-card {
         max-width: 100%;
-        min-height: 140px;
-        padding: 1.25rem;
-        margin-top: 0.75rem;
+        min-height: 120px;
+        padding: 1rem;
+        margin-top: 0.5rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
 
-    .card-id-badge {
+    .med-identity-card .card-logo i {
         font-size: 0.9rem;
+    }
+
+    .card-id-badge {
+        font-size: 0.8rem;
     }
 
     .detail-info-pane {
-        padding: 1rem;
+        padding: 1.5rem; /* Substantial equal padding on all sides */
+        overflow-y: auto;
     }
 
     .detail-section-title {
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
     }
 
     .detail-body {
-        grid-template-columns: 1fr 1fr;
-        padding: 1rem 0.75rem;
-        gap: 0 1rem;
+        grid-template-columns: 1fr; /* Switch to single column for better mobile fit */
+        padding: 0; /* Let the parent pane handle horizontal padding */
+        gap: 0;
     }
 
     .detail-info-row {
-        padding: 0.85rem 0;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     
-    .detail-info-row span {
-        font-size: 0.9rem;
-        margin-top: 4px;
+    .detail-info-row:last-child {
+        border-bottom: none;
     }
 
     .detail-info-row label {
         font-size: 0.6rem;
+        margin-bottom: 2px;
     }
 
     .detail-info-row span {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        margin-top: 0;
     }
 
     .detail-actions {
-        padding: 0.85rem 1rem;
-        gap: 0.6rem;
+        padding: 1rem;
+        gap: 0.75rem;
+        flex-direction: column; /* Stack buttons on mobile */
+        border-top: 1px solid rgba(255,255,255,0.08);
     }
 
     .detail-actions .btn {
-        height: 44px;
-        font-size: 0.85rem;
+        height: 48px;
+        width: 100%;
+        font-size: 0.9rem;
+        justify-content: center;
     }
 }
 
@@ -2618,12 +2667,24 @@ footer {
     }
 
     .logo-area svg {
-        width: 32px;
-        height: 32px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .logo-area {
+        gap: 0.75rem;
+    }
+
+    header h1 {
+        font-size: 1rem;
     }
 
     .header-actions {
         gap: 0.75rem;
+    }
+
+    .header-actions .nav-text {
+        display: none; /* Hide button text labels on mobile */
     }
 
     .admin-dash-actions .btn {
@@ -2942,6 +3003,10 @@ footer {
         font-size: 0.8rem;
     }
 
+    .admin-dash-actions .nav-text {
+        display: none; /* Hide text on very small headers */
+    }
+
     #canvas-container {
         height: 250px;
         min-height: 220px;
@@ -3055,6 +3120,40 @@ footer {
     .admin-tab i {
         font-size: 0.8rem;
     }
+
+    /* Responsive Delete Modal adjustments */
+    .delete-modal-content {
+        padding: 2.25rem 1.25rem;
+        width: 95%;
+        border-radius: 20px !important;
+    }
+
+    .delete-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .delete-modal-content h3 {
+        font-size: 1.3rem;
+    }
+
+    .delete-modal-content p {
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .delete-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .delete-actions .btn {
+        height: 44px;
+        width: 100%;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 350px) {
@@ -3134,5 +3233,80 @@ footer {
     color: white !important;
     transform: rotate(90deg) scale(1.1);
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+/* DELETE CONFIRM MODAL */
+#delete-confirm-modal {
+    z-index: 9999;
+}
+
+.delete-modal-content {
+    max-width: 420px;
+    text-align: center;
+    padding: 3rem 2rem;
+    border-radius: 28px !important;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    position: relative;
+}
+
+.delete-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    font-size: 1.8rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    animation: pulseRed 2s infinite;
+}
+
+@keyframes pulseRed {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.delete-modal-content h3 {
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.delete-modal-content p {
+    color: #94a3b8;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2.25rem;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.delete-actions .btn {
+    flex: 1;
+    height: 52px;
+    border-radius: 16px;
+    font-weight: 700;
+}
+
+.btn-danger-gradient {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: white;
+    border: none;
+}
+
+.btn-danger-gradient:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5);
 }
 

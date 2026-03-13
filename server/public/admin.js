@@ -79,6 +79,14 @@ window.addEventListener('load', () => {
         return;
     }
     initTheme();
+    
+    // Set Admin Email
+    const adminEmail = localStorage.getItem('adminEmail');
+    const emailTag = document.getElementById('adminEmailTag');
+    if (adminEmail && emailTag) {
+        emailTag.innerHTML = `<i class="fas fa-user-shield"></i> ${adminEmail}`;
+    }
+
     loadAdminData();
 });
 
@@ -108,6 +116,51 @@ function renderDashboard() {
     renderAdminUsers();
     renderAdminHospitals();
     renderAdminRequests();
+    setupClickHandlers();
+}
+
+function setupClickHandlers() {
+    const grids = ['usersGrid', 'hospitalsGrid', 'requestsGrid'];
+    grids.forEach(gridId => {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        
+        grid.onclick = (e) => {
+            const target = e.target;
+            
+            // 1. Handle Delete Button
+            const deleteBtn = target.closest('.admin-btn-delete');
+            if (deleteBtn) {
+                const card = deleteBtn.closest('.clickable-card');
+                if (card && card.dataset.id) {
+                    if (card.dataset.type === 'request') {
+                        adminRejectReq(card.dataset.id);
+                    } else {
+                        adminDeleteNode(card.dataset.id);
+                    }
+                }
+                return;
+            }
+
+            // 2. Handle Approve Button (for requests)
+            const approveBtn = target.closest('.admin-btn-approve');
+            if (approveBtn) {
+                const card = approveBtn.closest('.clickable-card');
+                if (card && card.dataset.id) {
+                    adminApproveReq(card.dataset.id);
+                }
+                return;
+            }
+
+            // 3. Handle Card Click (Detail Modal)
+            const card = target.closest('.clickable-card');
+            if (card) {
+                const type = card.dataset.type;
+                const id = card.dataset.id;
+                openDetailModal(type, id);
+            }
+        };
+    });
 }
 
 // --- TAB SWITCHING ---
@@ -138,22 +191,23 @@ function renderAdminUsers() {
         const phone = sanitizeHTML(u.phone);
         const email = sanitizeHTML(u.email);
         const nodeId = sanitizeHTML(u.nodeId);
-        const mongoId = sanitizeHTML(u._id);
+        const mongoId = sanitizeHTML(String(u._id));
 
         return `
-        <div class="admin-card user-card animate-in type-user ${u.approved ? 'status-approved' : 'status-pending'}" style="animation-delay: ${delay}s">
+        <div class="admin-card user-card animate-in type-user clickable-card ${u.approved ? 'status-approved' : 'status-pending'}" 
+             style="animation-delay: ${delay}s"
+             data-type="user" data-id="${mongoId}">
             <div class="admin-card-icon user-bg"><i class="fas fa-user-ninja"></i></div>
             <div class="admin-card-info">
                 <h4>${name} <span class="node-id-tag">ID: ${nodeId}</span></h4>
                 <p><i class="fas fa-phone"></i> ${phone || 'N/A'}</p>
                 <p><i class="fas fa-envelope"></i> ${email || 'N/A'}</p>
-                <div class="status-badge ${u.approved ? 'status-approved' : 'status-pending'} interactive-badge" 
-                     onclick="openDetailModal('user', '${mongoId}')" title="Click to verify">
+                <div class="status-badge ${u.approved ? 'status-approved' : 'status-pending'}" title="Verification required">
                     ${u.approved ? 'Approved' : 'Pending Verification'}
                 </div>
             </div>
             <div class="admin-card-actions">
-                <button class="admin-btn-delete" onclick="adminDeleteNode('${mongoId}')">
+                <button class="admin-btn-delete" title="Remove this user">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
@@ -174,10 +228,12 @@ function renderAdminHospitals() {
         const name = sanitizeHTML(h.name);
         const nodeId = sanitizeHTML(h.nodeId);
         const beds = sanitizeHTML(h.availableBeds);
-        const mongoId = sanitizeHTML(h._id);
+        const mongoId = sanitizeHTML(String(h._id));
 
         return `
-        <div class="admin-card hospital-card animate-in type-hospital" style="animation-delay: ${delay}s">
+        <div class="admin-card hospital-card animate-in type-hospital clickable-card" 
+             style="animation-delay: ${delay}s"
+             data-type="hospital" data-id="${mongoId}">
             <div class="admin-card-icon hosp-icon"><i class="fas fa-hospital-user"></i></div>
             <div class="admin-card-info">
                 <h4>${name} <span class="node-id-tag">ID: ${nodeId}</span></h4>
@@ -185,7 +241,7 @@ function renderAdminHospitals() {
                 <p><i class="fas fa-clock"></i> Pending Requests: <strong>${pending.length}</strong></p>
             </div>
             <div class="admin-card-actions">
-                <button class="admin-btn-delete" onclick="adminDeleteNode('${mongoId}')">
+                <button class="admin-btn-delete" title="Remove this hospital">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>
@@ -211,18 +267,20 @@ function renderAdminRequests() {
         const status = sanitizeHTML(n.status);
         const distance = sanitizeHTML(n.distance);
         const path = sanitizeHTML(n.path);
-        const mongoId = sanitizeHTML(n._id);
+        const mongoId = sanitizeHTML(String(n._id));
 
         const actions = n.status === 'pending' ? `
-            <button class="admin-btn-approve" onclick="adminApproveReq('${mongoId}')">
+            <button class="admin-btn-approve">
                 <i class="fas fa-circle-check"></i> Approve
             </button>
-            <button class="admin-btn-delete" onclick="adminRejectReq('${mongoId}')">
+            <button class="admin-btn-delete">
                 <i class="fas fa-circle-xmark"></i> Reject
             </button>` : '';
 
         return `
-        <div class="admin-card request-card animate-in ${badgeClass}" style="animation-delay: ${delay}s">
+        <div class="admin-card request-card animate-in clickable-card ${badgeClass}" 
+             style="animation-delay: ${delay}s"
+             data-type="request" data-id="${mongoId}">
             <div class="admin-card-icon req-icon"><i class="fas fa-truck-medical"></i></div>
             <div class="admin-card-info">
                 <h4>
@@ -247,12 +305,50 @@ async function adminApproveNode(mongoId, approved) {
     loadAdminData();
 }
 
+// --- DELETE CONFIRMATION MODAL LOGIC ---
+const deleteModal = document.getElementById('delete-confirm-modal');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+let nodeIdToDelete = null;
+
+function showDeleteConfirm(mongoId) {
+    console.log('showDeleteConfirm for:', mongoId);
+    nodeIdToDelete = mongoId;
+    
+    // Lazy-init or re-fetch if needed
+    const modal = document.getElementById('delete-confirm-modal');
+    if (!modal) {
+        console.error('CRITICAL: Delete modal element not found in DOM');
+        showToast('System error: Delete modal missing.', 'error');
+        return;
+    }
+    
+    modal.classList.add('active');
+}
+
+function hideDeleteConfirm() {
+    nodeIdToDelete = null;
+    const modal = document.getElementById('delete-confirm-modal');
+    if (modal) modal.classList.remove('active');
+}
+
+if (cancelDeleteBtn) cancelDeleteBtn.onclick = hideDeleteConfirm;
+if (confirmDeleteBtn) {
+    confirmDeleteBtn.onclick = async () => {
+        if (!nodeIdToDelete) return;
+        const id = nodeIdToDelete;
+        hideDeleteConfirm();
+        
+        const [, err] = await apiFetch(`${API}/nodes/${id}`, { method: 'DELETE' });
+        if (err) return showToast(err, 'error');
+        showToast('Node removed.');
+        loadAdminData();
+    };
+}
+
 async function adminDeleteNode(mongoId) {
-    if (!confirm('Delete this node? All related records will be removed.')) return;
-    const [, err] = await apiFetch(`${API}/nodes/${mongoId}`, { method: 'DELETE' });
-    if (err) return showToast(err, 'error');
-    showToast('Node removed.');
-    loadAdminData();
+    console.log('adminDeleteNode triggered for:', mongoId);
+    showDeleteConfirm(mongoId);
 }
 
 async function adminApproveReq(notifId) {
@@ -293,25 +389,51 @@ function showToast(msg, type = 'success') {
 const detailModal = document.getElementById('detail-modal');
 const closeDetailModalBtn = document.getElementById('closeDetailModal');
 
-function openDetailModal(type, mongoId) {
-    const item = nodes.find(n => n._id === mongoId);
-    if (!item) return;
+function openDetailModal(type, id) {
+    let item;
+    if (type === 'request') {
+        item = notifications.find(n => n._id == id);
+    } else {
+        // Find by mongo _id OR nodeId as fallback
+        item = nodes.find(n => n._id == id || n.nodeId == id);
+    }
+    
+    if (!item) {
+        console.error(`Item not found for type ${type} and ID ${id}`);
+        showToast('Data for this item could not be found.', 'error');
+        return;
+    }
 
     // Apply theme class
-    detailModal.classList.remove('modal-theme-user', 'modal-theme-hospital');
-    detailModal.classList.add(type === 'user' ? 'modal-theme-user' : 'modal-theme-hospital');
+    detailModal.classList.remove('modal-theme-user', 'modal-theme-hospital', 'modal-theme-request');
+    detailModal.classList.add(`modal-theme-${type}`);
 
-    document.getElementById('detail-name').textContent = item.name;
-    document.getElementById('detail-id').textContent = item.nodeId;
-    document.getElementById('detail-blood-group').textContent = item.bloodGroup || 'A+ (Primary)'; // Fallback for impact
-    document.getElementById('detail-phone').textContent = item.phone || 'Not Provided';
-    document.getElementById('detail-email').textContent = item.email || 'No Email';
-    document.getElementById('detail-address').textContent = item.address || 'Sector 15, Healthcare Hub, North Wing City'; // High-end fallback
+    if (type === 'request') {
+        const fromNode = nodes.find(nd => nd.nodeId == item.sourceNodeIndex);
+        const toNode = nodes.find(nd => nd.nodeId == item.targetNodeIndex);
+        
+        document.getElementById('detail-name').textContent = 'Emergency Request';
+        document.getElementById('detail-id').textContent = `REQ-${String(item._id).slice(-6).toUpperCase()}`;
+        document.getElementById('detail-blood-group').textContent = fromNode ? (fromNode.bloodGroup || 'O+') : '--';
+        document.getElementById('detail-phone').textContent = fromNode ? (fromNode.phone || 'N/A') : 'N/A';
+        document.getElementById('detail-email').textContent = fromNode ? (fromNode.email || 'N/A') : 'N/A';
+        document.getElementById('detail-address').textContent = `From: ${fromNode ? fromNode.name : 'Unknown'} → To: ${toNode ? toNode.name : 'Unknown'}`;
 
-    // Populate Visual Card
-    document.getElementById('card-id-val').textContent = item.nodeId;
-    document.getElementById('card-name-val').textContent = item.name;
-    document.getElementById('card-type-val').textContent = type === 'user' ? 'USER IDENTITY' : 'MEDICAL PROVIDER';
+        document.getElementById('card-id-val').textContent = 'EMERGENCY';
+        document.getElementById('card-name-val').textContent = fromNode ? fromNode.name : 'Patient';
+        document.getElementById('card-type-val').textContent = 'DISPATCH REQUEST';
+    } else {
+        document.getElementById('detail-name').textContent = item.name;
+        document.getElementById('detail-id').textContent = item.nodeId;
+        document.getElementById('detail-blood-group').textContent = item.bloodGroup || 'A+ (Primary)'; 
+        document.getElementById('detail-phone').textContent = item.phone || 'Not Provided';
+        document.getElementById('detail-email').textContent = item.email || 'No Email';
+        document.getElementById('detail-address').textContent = item.address || 'Sector 15, Healthcare Hub, North Wing City'; 
+
+        document.getElementById('card-id-val').textContent = item.nodeId;
+        document.getElementById('card-name-val').textContent = item.name;
+        document.getElementById('card-type-val').textContent = type === 'user' ? 'USER IDENTITY' : 'MEDICAL PROVIDER';
+    }
 
     const typeTag = document.getElementById('detail-type-tag');
     const iconDiv = document.getElementById('detail-icon');
@@ -322,33 +444,54 @@ function openDetailModal(type, mongoId) {
         typeTag.textContent = 'User Account';
         iconDiv.innerHTML = '<i class="fas fa-user-ninja"></i>';
         iconDiv.className = 'master-profile-icon user-bg';
-    } else {
+    } else if (type === 'hospital') {
         typeTag.textContent = 'Hospital Provider';
         iconDiv.innerHTML = '<i class="fas fa-hospital-user"></i>';
         iconDiv.className = 'master-profile-icon hosp-icon';
+    } else {
+        typeTag.textContent = 'Emergency Alert';
+        iconDiv.innerHTML = '<i class="fas fa-truck-medical"></i>';
+        iconDiv.className = 'master-profile-icon req-icon';
     }
 
-    statusBadge.textContent = item.approved ? 'Approved' : 'Pending Verification';
-    statusBadge.className = `status-badge ${item.approved ? 'status-approved' : 'status-pending'}`;
+    const currentStatus = type === 'request' ? item.status : (item.approved ? 'approved' : 'pending');
+    statusBadge.textContent = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
+    statusBadge.className = `status-badge status-${currentStatus}`;
 
     // Build actions
     let actionsHtml = '';
     const sanitizedId = sanitizeHTML(item._id);
-    if (!item.approved) {
-        actionsHtml = `
-            <button class="admin-btn-approve" onclick="confirmApproveInModal('${sanitizedId}')">
-                <i class="fas fa-check"></i> Approve
-            </button>
-            <button class="admin-btn-delete" onclick="confirmRejectInModal('${sanitizedId}')">
-                <i class="fas fa-times"></i> Reject
-            </button>
-        `;
+    
+    if (type === 'request') {
+        if (item.status === 'pending') {
+            actionsHtml = `
+                <button class="admin-btn-approve" onclick="confirmApproveReqInModal('${sanitizedId}')">
+                    <i class="fas fa-check"></i> Approve Request
+                </button>
+                <button class="admin-btn-delete" onclick="confirmRejectReqInModal('${sanitizedId}')">
+                    <i class="fas fa-times"></i> Reject Request
+                </button>
+            `;
+        } else {
+            actionsHtml = `<p class="admin-hint">Status finalized as <strong>${item.status}</strong></p>`;
+        }
     } else {
-        actionsHtml = `
-            <button class="admin-btn-unapprove" onclick="confirmUnapproveInModal('${sanitizedId}')">
-                <i class="fas fa-undo"></i> Unapprove
-            </button>
-        `;
+        if (!item.approved) {
+            actionsHtml = `
+                <button class="admin-btn-approve" onclick="confirmApproveInModal('${sanitizedId}')">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+                <button class="admin-btn-delete" onclick="confirmRejectInModal('${sanitizedId}')">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+            `;
+        } else {
+            actionsHtml = `
+                <button class="admin-btn-unapprove" onclick="confirmUnapproveInModal('${sanitizedId}')">
+                    <i class="fas fa-undo"></i> Unapprove
+                </button>
+            `;
+        }
     }
     actionsDiv.innerHTML = actionsHtml;
 
@@ -382,5 +525,15 @@ async function confirmRejectInModal(id) {
 
 async function confirmUnapproveInModal(id) {
     await adminApproveNode(id, false);
+    closeDetailModal();
+}
+
+async function confirmApproveReqInModal(id) {
+    await adminApproveReq(id);
+    closeDetailModal();
+}
+
+async function confirmRejectReqInModal(id) {
+    await adminRejectReq(id);
     closeDetailModal();
 }

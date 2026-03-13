@@ -675,6 +675,7 @@ adminLoginBtn.onclick = async () => {
 
     // Successful login
     localStorage.setItem('adminToken', data.token);
+    localStorage.setItem('adminEmail', data.email);
     adminLoginError.classList.add('hidden');
     adminLoginModal.classList.remove('active');
     showToast(`✅ Welcome, Admin! Redirecting...`);

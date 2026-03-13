@@ -46,8 +46,11 @@
                 <button id="themeToggleBtn" class="btn-icon" title="Toggle Theme">
                     <i class="fas fa-moon"></i>
                 </button>
+                <a href="index.html" class="btn btn-outline admin-nav-link" title="Go to Landing Page">
+                    <i class="fas fa-house"></i> <span class="nav-text">Home</span>
+                </a>
                 <a href="app.html" class="btn btn-outline admin-nav-link">
-                    <i class="fas fa-arrow-left"></i> Back to Map
+                    <i class="fas fa-arrow-left"></i> <span class="nav-text">Back to Map</span>
                 </a>
                 <span class="admin-email-tag" id="adminEmailTag"><i class="fas fa-user-shield"></i>
                     admin@medpath.pro</span>
@@ -180,6 +183,21 @@
                 <div class="detail-actions" id="detail-modal-actions">
                     <!-- Dynamic actions -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM DELETE MODAL -->
+    <div id="delete-confirm-modal" class="modal">
+        <div class="modal-content delete-modal-content">
+            <div class="delete-icon-wrapper">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Are you sure?</h3>
+            <p>This action cannot be undone. All related records for this node will be permanently removed from the system.</p>
+            <div class="delete-actions">
+                <button id="cancelDeleteBtn" class="btn btn-outline">No, Cancel</button>
+                <button id="confirmDeleteBtn" class="btn btn-danger-gradient">Yes, Delete Node</button>
             </div>
         </div>
     </div>
