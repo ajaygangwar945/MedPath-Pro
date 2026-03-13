@@ -165,6 +165,33 @@ function setupClickHandlers() {
             }
         };
     });
+
+    // 4. Handle Detail Modal Actions (Approve/Reject from within the dossier)
+    const modalActions = document.getElementById('detail-modal-actions');
+    if (modalActions && !modalActions.dataset.listenerAttached) {
+        modalActions.dataset.listenerAttached = 'true';
+        modalActions.addEventListener('click', (e) => {
+            const btnApprove = e.target.closest('.admin-btn-approve');
+            if (btnApprove && btnApprove.dataset.id) {
+                if (btnApprove.dataset.type === 'request') confirmApproveReqInModal(btnApprove.dataset.id);
+                else confirmApproveInModal(btnApprove.dataset.id);
+                return;
+            }
+
+            const btnDelete = e.target.closest('.admin-btn-delete');
+            if (btnDelete && btnDelete.dataset.id) {
+                if (btnDelete.dataset.type === 'request') confirmRejectReqInModal(btnDelete.dataset.id);
+                else confirmRejectInModal(btnDelete.dataset.id);
+                return;
+            }
+
+            const btnUnapprove = e.target.closest('.admin-btn-unapprove');
+            if (btnUnapprove && btnUnapprove.dataset.id) {
+                confirmUnapproveInModal(btnUnapprove.dataset.id);
+                return;
+            }
+        });
+    }
 }
 
 // --- TAB SWITCHING ---
@@ -211,18 +238,9 @@ function renderAdminUsers() {
                 </div>
             </div>
             <div class="admin-card-actions">
-                ${!u.approved ? `
-                    <button class="admin-btn-approve" title="Approve verification">
-                        <i class="fas fa-check"></i> Approve
-                    </button>
-                    <button class="admin-btn-delete" title="Reject and delete this user">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                ` : `
-                    <button class="admin-btn-delete" title="Remove this user">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                `}
+                <button class="admin-btn-delete" title="Remove this user">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
             </div>
         </div>`;
     }).join('');
@@ -254,18 +272,9 @@ function renderAdminHospitals() {
                 <p><i class="fas fa-clock"></i> Pending Requests: <strong>${pending.length}</strong></p>
             </div>
             <div class="admin-card-actions">
-                ${!h.approved ? `
-                    <button class="admin-btn-approve" title="Approve hospital">
-                        <i class="fas fa-check"></i> Approve
-                    </button>
-                    <button class="admin-btn-delete" title="Reject and delete this hospital">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                ` : `
-                    <button class="admin-btn-delete" title="Remove this hospital">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                `}
+                <button class="admin-btn-delete" title="Remove this hospital">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
             </div>
         </div>`;
     }).join('');
@@ -487,10 +496,10 @@ function openDetailModal(type, id) {
     if (type === 'request') {
         if (item.status === 'pending') {
             actionsHtml = `
-                <button class="btn admin-btn-approve" onclick="confirmApproveReqInModal('${sanitizedId}')">
+                <button class="btn admin-btn-approve" data-id="${sanitizedId}" data-type="request">
                     <i class="fas fa-check"></i> Approve Request
                 </button>
-                <button class="btn admin-btn-delete" onclick="confirmRejectReqInModal('${sanitizedId}')">
+                <button class="btn admin-btn-delete" data-id="${sanitizedId}" data-type="request">
                     <i class="fas fa-times"></i> Reject Request
                 </button>
             `;
@@ -500,16 +509,16 @@ function openDetailModal(type, id) {
     } else {
         if (!item.approved) {
             actionsHtml = `
-                <button class="btn admin-btn-approve" onclick="confirmApproveInModal('${sanitizedId}')">
+                <button class="btn admin-btn-approve" data-id="${sanitizedId}" data-type="${type}">
                     <i class="fas fa-check"></i> Approve
                 </button>
-                <button class="btn admin-btn-delete" onclick="confirmRejectInModal('${sanitizedId}')">
+                <button class="btn admin-btn-delete" data-id="${sanitizedId}" data-type="${type}">
                     <i class="fas fa-times"></i> Reject
                 </button>
             `;
         } else {
             actionsHtml = `
-                <button class="btn admin-btn-unapprove" onclick="confirmUnapproveInModal('${sanitizedId}')">
+                <button class="btn admin-btn-unapprove" data-id="${sanitizedId}" data-type="${type}">
                     <i class="fas fa-undo"></i> Unapprove
                 </button>
             `;
