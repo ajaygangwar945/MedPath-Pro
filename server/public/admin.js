@@ -142,12 +142,16 @@ function setupClickHandlers() {
                 return;
             }
 
-            // 2. Handle Approve Button (for requests)
+            // 2. Handle Approve Button
             const approveBtn = target.closest('.admin-btn-approve');
             if (approveBtn) {
                 const card = approveBtn.closest('.clickable-card');
                 if (card && card.dataset.id) {
-                    adminApproveReq(card.dataset.id);
+                    if (card.dataset.type === 'request') {
+                        adminApproveReq(card.dataset.id);
+                    } else {
+                        adminApproveNode(card.dataset.id, true);
+                    }
                 }
                 return;
             }
@@ -207,9 +211,18 @@ function renderAdminUsers() {
                 </div>
             </div>
             <div class="admin-card-actions">
-                <button class="admin-btn-delete" title="Remove this user">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
+                ${!u.approved ? `
+                    <button class="admin-btn-approve" title="Approve verification">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button class="admin-btn-delete" title="Reject and delete this user">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                ` : `
+                    <button class="admin-btn-delete" title="Remove this user">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                `}
             </div>
         </div>`;
     }).join('');
@@ -241,9 +254,18 @@ function renderAdminHospitals() {
                 <p><i class="fas fa-clock"></i> Pending Requests: <strong>${pending.length}</strong></p>
             </div>
             <div class="admin-card-actions">
-                <button class="admin-btn-delete" title="Remove this hospital">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
+                ${!h.approved ? `
+                    <button class="admin-btn-approve" title="Approve hospital">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button class="admin-btn-delete" title="Reject and delete this hospital">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                ` : `
+                    <button class="admin-btn-delete" title="Remove this hospital">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                `}
             </div>
         </div>`;
     }).join('');
@@ -297,7 +319,7 @@ function renderAdminRequests() {
 
 // --- ACTIONS ---
 async function adminApproveNode(mongoId, approved) {
-    const [, err] = await apiFetch(`${API}/nodes/${mongoId}`, {
+    const [, err] = await apiFetch(`${API}/nodes/${mongoId}/approve`, {
         method: 'PATCH',
         body: JSON.stringify({ approved })
     });
@@ -465,10 +487,10 @@ function openDetailModal(type, id) {
     if (type === 'request') {
         if (item.status === 'pending') {
             actionsHtml = `
-                <button class="admin-btn-approve" onclick="confirmApproveReqInModal('${sanitizedId}')">
+                <button class="btn admin-btn-approve" onclick="confirmApproveReqInModal('${sanitizedId}')">
                     <i class="fas fa-check"></i> Approve Request
                 </button>
-                <button class="admin-btn-delete" onclick="confirmRejectReqInModal('${sanitizedId}')">
+                <button class="btn admin-btn-delete" onclick="confirmRejectReqInModal('${sanitizedId}')">
                     <i class="fas fa-times"></i> Reject Request
                 </button>
             `;
@@ -478,16 +500,16 @@ function openDetailModal(type, id) {
     } else {
         if (!item.approved) {
             actionsHtml = `
-                <button class="admin-btn-approve" onclick="confirmApproveInModal('${sanitizedId}')">
+                <button class="btn admin-btn-approve" onclick="confirmApproveInModal('${sanitizedId}')">
                     <i class="fas fa-check"></i> Approve
                 </button>
-                <button class="admin-btn-delete" onclick="confirmRejectInModal('${sanitizedId}')">
+                <button class="btn admin-btn-delete" onclick="confirmRejectInModal('${sanitizedId}')">
                     <i class="fas fa-times"></i> Reject
                 </button>
             `;
         } else {
             actionsHtml = `
-                <button class="admin-btn-unapprove" onclick="confirmUnapproveInModal('${sanitizedId}')">
+                <button class="btn admin-btn-unapprove" onclick="confirmUnapproveInModal('${sanitizedId}')">
                     <i class="fas fa-undo"></i> Unapprove
                 </button>
             `;
@@ -517,10 +539,9 @@ async function confirmApproveInModal(id) {
 }
 
 async function confirmRejectInModal(id) {
-    if (confirm('Are you sure you want to reject and delete this user?')) {
-        await adminDeleteNode(id);
-        closeDetailModal();
-    }
+    // Remove the native confirm dialog to prevent double confirmation, since adminDeleteNode already opens the custom confirmation modal
+    closeDetailModal();
+    adminDeleteNode(id);
 }
 
 async function confirmUnapproveInModal(id) {
