@@ -2692,8 +2692,19 @@ footer {
         font-size: 0.8rem;
     }
 
-    .admin-dash-actions .btn i {
-        font-size: 0.9rem;
+    .header-actions .btn-icon,
+    .header-actions .btn {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0; /* Important */
+    }
+
+    .header-actions .btn i {
+        margin: 0;
     }
 
 
@@ -3005,6 +3016,22 @@ footer {
 
     .admin-dash-actions .nav-text {
         display: none; /* Hide text on very small headers */
+    }
+
+    .admin-dash-actions .btn {
+        width: 40px;
+        height: 40px;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0 !important;
+        border-radius: 12px;
+    }
+
+    .admin-dash-actions .btn i {
+        margin: 0 !important;
+        font-size: 1rem;
     }
 
     #canvas-container {
