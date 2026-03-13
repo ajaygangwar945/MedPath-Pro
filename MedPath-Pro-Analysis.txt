@@ -2,8 +2,8 @@
   MEDPATH PRO — COMPLETE DSA (Data Structures & Algorithms) ANALYSIS DOCUMENT
 ================================================================================
   Project : MedPath Pro — Hospital Shortest Path Visualizer
-  Files   : index.html, script.js, style.css
-  Date    : 2026-02-24
+  Files   : landing.html, app.html, admin.html, script.js, admin.js, index.js
+  Date    : 2026-03-14
   Author  : Auto-generated analysis of full codebase
 ================================================================================
 
@@ -56,22 +56,25 @@ TECHNOLOGY STACK:
   2. PROJECT ARCHITECTURE & FILE SUMMARY
 ================================================================================
 
-The project follows a modern full-stack directory structure:
-
-ROOT DIRECTORY:
-  - MedPath_Pro_Analysis.txt : This technical analysis document.
+The project follows a modern full-stack directory structure:ROOT DIRECTORY:
+  - MedPath-Pro-Analysis.txt : This technical analysis document.
   - README.md                : Project overview, setup, and deployment guide.
+  - banner_v2.png           : Premium high-resolution project visual.
   - render.yaml             : Infrastructure as Code for Render deployment.
   - package.json            : Global scripts for starting the dev environment.
 
 SERVER DIRECTORY (/server):
   - index.js                : The brain of the backend. Handles Express setup,
-                              MongoDB connection, and Auto-Seeding logic.
+                               MongoDB connection, and Auto-Seeding logic.
   - seed.js                 : Manual database initialization script.
   - public/                 : The web root. Contains optimized frontend assets:
-      - index.html          : Main app structure with 7 interactive modals.
-      - script.js (1200+ l) : Core logic (Canvas, Dijkstra, Admin API calls).
-      - style.css           : Glassmorphism and responsive UI styling.
+      - index.html          : Professional Landing page (Three.js integration).
+      - app.html            : Main interactive map interface.
+      - admin.html          : Secure control panel for node management.
+      - script.js           : Core app logic (Canvas, Dijkstra, Client API).
+      - admin.js            : Dashboard logic (Stats, Live Approval Flow).
+      - style.css           : Global Glassmorphism and specialized mobile UI.
+      - landing.css         : Cinematic styles for the landing experience.
   - routes/                 : RESTful API endpoints:
       - auth.js             : Login, JWT signing, and Password Reset.
       - nodes.js            : Persistent node management (CRUD + Approval).
@@ -583,29 +586,29 @@ WHERE USED — displayResults() and sendNotification() (Lines 670–677, 738):
   FUNCTION / FEATURE               | FILE:LINES      | DSA TOPIC(S) USED
   ---------------------------------|-----------------|---------------------------
   nodes[], edges[] declaration     | script.js:64-65 | Graph (Edge List)
-  canvas mousedown handler         | script.js:95-158| Linear Search, Graph
-  findNodeAt(x, y)                 | script.js:425-433| Linear Search, Euclidean
-  calculateDistance(a, b)          | script.js:438-440| Euclidean Distance
-  runDijkstra(source)              | script.js:450-491| Dijkstra, Array, Linear
-  drawGraph() — edge drawing       | script.js:504-520| Graph traversal
-  drawGraph() — path highlight     | script.js:522-539| Path Reconstruction
-  drawGraph() — animated paths     | script.js:542-591| Animation, Path Recon
-  startAnimationLoop()             | script.js:642-655| Animation Loop (RAF)
-  displayResults(source)           | script.js:660-697| Path Reconstruction, String
-  sendNotification()               | script.js:722-743| Duplicate Detection, Array
-  renderPortalNotifications()      | script.js:191-254| Filtering, State Mgmt
-  approveNotification(idx)         | script.js:259-287| Graph Update, Dijkstra
-  rejectNotification(idx)          | script.js:292-304| State Management
-  adminApproveNode(id, approved)   | script.js:630-638| Graph/Persistence Update
-  adminEditNode(index)             | script.js:645-647| State Management (UI)
+  canvas mousedown handler         | script.js       | Linear Search, Graph
+  findNodeAt(x, y)                 | script.js       | Linear Search, Euclidean
+  calculateDistance(a, b)          | script.js       | Euclidean Distance
+  runDijkstra(source)              | script.js       | Dijkstra, Array, Linear
+  drawGraph() — edge drawing       | script.js       | Graph traversal
+  drawGraph() — path highlight     | script.js       | Path Reconstruction
+  drawGraph() — animated paths     | script.js       | Animation, Path Recon
+  startAnimationLoop()             | script.js       | Animation Loop (RAF)
+  displayResults(source)           | script.js       | Path Reconstruction, String
+  sendNotification()               | script.js       | Duplicate Detection, Array
+  renderPortalNotifications()      | admin.js        | Filtering, State Mgmt
+  approveNotification(idx)         | admin.js        | Graph Update, Dijkstra
+  rejectNotification(idx)          | admin.js        | State Management
+  adminApproveNode(id, approved)   | admin.js        | Graph/Persistence Update
+  adminEditNode(index)             | admin.js        | State Management (UI)
   seedAdmin()                      | server/index.js  | Data Persistence / Initialization
-  authHeaders()                    | script.js:14-18  | Security / State Management
-  renderAdminUsers/Hospitals()     | script.js:590-625| Array Mapping / UI Rendering
-  Edge creation guard              | script.js:113-116| Duplicate Detection
-  updateBtnStates()                | script.js:757-762| Boolean State
-  demoBtn data (nodes/edges)       | script.js:777-804| Graph (Edge List)
-  Admin login: isAdminLoggedIn     | script.js:75-77 | Boolean Flag
-  Admin login: pendingHospital     | script.js:77    | State Management
+  authHeaders()                    | admin.js        | Security / State Management
+  renderAdminUsers/Hospitals()     | admin.js        | Array Mapping / UI Rendering
+  Edge creation guard              | script.js       | Duplicate Detection
+  updateBtnStates()                | script.js       | Boolean State
+  demoBtn data (nodes/edges)       | script.js       | Graph (Edge List)
+  Admin login: isAdminLoggedIn     | admin.js        | Boolean Flag
+  JWT / Bcrypt Security            | auth.js         | Cryptographic Mapping
 
 
 ================================================================================

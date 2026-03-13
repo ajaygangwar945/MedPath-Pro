@@ -61,7 +61,7 @@ The project is live and accessible online.
 - **Graphics Graphics**: Canvas API (2D Graph rendering), Three.js (3D Animated background)
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB Atlas (Mongoose)
-- **Auth & Security**: JWT (JSON Web Tokens) & Bcryptjs
+- **Auth & Security**: JWT (JSON Web Tokens), Bcryptjs (12 Salt Rounds), Helmet.js (Security Headers), and Express-Rate-Limit (Brute-force protection)
 - **Assets**: Font Awesome 6 (Icons), Inter (Google Fonts)
 
 ---
@@ -70,12 +70,15 @@ The project is live and accessible online.
 
 ```bash
 ├── server/             # Express.js Backend
+│   ├── middleware/    # Auth Guards & Security Logic
 │   ├── models/        # Mongoose Schemas (Admin, Node, Edge, Notification)
 │   ├── routes/        # API Endpoints (Auth, Nodes, Edges, Notifications)
-│   ├── public/        # Main Frontend (Served by Express)
-│   └── index.js       # Server Entry & Auto-Seeding Logic
-├── MedPath_Pro_Analysis.txt # Detailed DSA Technical Analysis
-└── render.yaml        # Render Deployment Configuration
+│   ├── public/        # Optimized Frontend (Served by Express)
+│   │   ├── assets/    # High-resolution clinical visuals & favicons
+│   │   └── ...        # landing.html, app.html, admin.html, admin.js
+│   └── index.js       # Core Server Entry & Auto-Seeding Logic
+├── MedPath-Pro-Analysis.txt # Complete DSA Technical Analysis
+└── render.yaml        # Infrastructure as Code (Render)
 ```
 
 ---
